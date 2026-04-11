@@ -1,0 +1,105 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import BlogCard from "../../components/BlogCard.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import { getCollection } from "astro:content";
+import { sortPosts } from "../../utils/sort-posts";
+
+export async function getStaticPaths() {
+	const blogPosts = await getCollection(
+		"blog",
+		({ data }) => data.status === "published",
+	);
+	const projects = await getCollection(
+		"projects",
+		({ data }) => data.status === "published",
+	);
+
+	const allTags = new Set<string>();
+
+	blogPosts.forEach((post) => {
+		post.data.tags.forEach((tag: string) => allTags.add(tag.toLowerCase()));
+	});
+
+	projects.forEach((project) => {
+		project.data.tags.forEach((tag: string) => allTags.add(tag.toLowerCase()));
+	});
+
+	return Array.from(allTags).map((tag) => ({
+		params: { tag },
+	}));
+}
+
+const { tag } = Astro.params;
+const allBlogPosts = await getCollection(
+	"blog",
+	({ data }) => data.status === "published",
+);
+const allProjects = await getCollection(
+	"projects",
+	({ data }) => data.status === "published",
+);
+
+const blogPosts = allBlogPosts.filter((post) =>
+	post.data.tags.some((t: string) => t.toLowerCase() === tag),
+);
+
+const projects = allProjects.filter((project) =>
+	project.data.tags.some((t: string) => t.toLowerCase() === tag),
+);
+
+const allItems = [...blogPosts, ...projects].sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<BaseLayout title={`Posts tagged "${tag}"`}>
+	<Header />
+
+	<main class='flex-1'>
+		<section class='py-6 px-4 sm:px-6 lg:px-8'>
+			<div class='max-w-5xl mx-auto'>
+				<h1
+					class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600 mb-4'>
+					Posts & Projects tagged <span class="text-green-600">#{tag}</span>
+				</h1>
+
+				{
+					allItems.length > 0 ? (
+						<div>
+							{allItems.map((item) => {
+								if ('github' in item.data || 'live' in item.data) {
+									return (
+										<ProjectCard
+											title={item.data.title}
+											excerpt={item.data.excerpt}
+											slug={item.id}
+											date={item.data.date}
+											tags={item.data.tags}
+										/>
+									)
+								} else {
+									return (
+										<BlogCard
+											title={item.data.title}
+											excerpt={item.data.excerpt}
+											slug={item.id}
+											date={item.data.date}
+											tags={item.data.tags}
+										/>
+									)
+								}
+							})}
+						</div>
+					) : (
+						<p class='text-text-2 text-sm sm:text-base'>
+							No posts found for this tag.
+						</p>
+					)
+				}
+			</div>
+		</section>
+	</main>
+
+	<Footer />
+</BaseLayout>

@@ -1,0 +1,188 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: 'class',
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  theme: {
+    extend: {
+      colors: {
+        bg: 'var(--color-bg)',
+        'bg-2': 'var(--color-bg-2)',
+        'bg-3': 'var(--color-bg-3)',
+        surface: 'var(--color-surface)',
+        border: 'var(--color-border)',
+        'border-2': 'var(--color-border-2)',
+        text: 'var(--color-text)',
+        'text-2': 'var(--color-text-2)',
+        'text-3': 'var(--color-text-3)',
+        accent: 'var(--color-accent)',
+        'accent-bg': 'var(--color-accent-bg)',
+        'accent-text': 'var(--color-accent-text)',
+      },
+      fontFamily: {
+        serif: ['Lora', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
+      },
+      spacing: {
+        1: '0.25rem',
+        2: '0.5rem',
+        3: '0.75rem',
+        4: '1rem',
+        5: '1.25rem',
+        6: '1.5rem',
+        8: '2rem',
+        10: '2.5rem',
+        12: '3rem',
+        16: '4rem',
+        20: '5rem',
+      },
+      fontSize: {
+        xs: '0.75rem',
+        sm: '0.875rem',
+        base: '1rem',
+        lg: '1.0625rem',
+        xl: '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        '4xl': '2.25rem',
+        hero: '2.5rem',
+      },
+      maxWidth: {
+        prose: '640px',
+        toc: '220px',
+        layout: '1100px',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/typography')({
+      className: 'prose',
+      modifiers: [],
+      target: 'classic',
+      css: {
+        '--tw-prose-body': 'var(--tw-prose-invert-body)',
+        '--tw-prose-headings': 'var(--tw-prose-invert-headings)',
+        '--tw-prose-lead': 'var(--tw-prose-invert-lead)',
+        '--tw-prose-links': 'var(--tw-prose-invert-links)',
+        '--tw-prose-bold': 'var(--tw-prose-invert-bold)',
+        '--tw-prose-counters': 'var(--tw-prose-invert-counters)',
+        '--tw-prose-bullets': 'var(--tw-prose-invert-bullets)',
+        '--tw-prose-hr': 'var(--tw-prose-invert-hr)',
+        '--tw-prose-quotes': 'var(--tw-prose-invert-quotes)',
+        '--tw-prose-quote-borders': 'var(--tw-prose-invert-quote-borders)',
+        '--tw-prose-captions': 'var(--tw-prose-invert-captions)',
+        '--tw-prose-code': 'var(--tw-prose-invert-code)',
+        '--tw-prose-pre-code': 'var(--tw-prose-invert-pre-code)',
+        '--tw-prose-pre-bg': 'var(--tw-prose-invert-pre-bg)',
+        '--tw-prose-th-borders': 'var(--tw-prose-invert-th-borders)',
+        '--tw-prose-td-borders': 'var(--tw-prose-invert-td-borders)',
+        fontFamily: 'Lora, Georgia, Cambria, Times New Roman, serif',
+        fontSize: '17px',
+        lineHeight: '1.8',
+        maxWidth: '640px',
+        h1: {
+          fontSize: '1.5rem',
+          fontWeight: '700',
+          lineHeight: '1.3',
+          marginTop: '0',
+          marginBottom: '0.75rem',
+          '@screen sm': {
+            fontSize: '2.25rem',
+            lineHeight: '2.5rem',
+          }
+        },
+        h2: {
+          fontSize: '1.25rem',
+          fontWeight: '600',
+          lineHeight: '1.4',
+          marginTop: '1.5rem',
+          marginBottom: '0.5rem',
+          '@screen sm': {
+            fontSize: '1.875rem',
+            lineHeight: '2.25rem',
+          }
+        },
+        h3: {
+          fontSize: '1.125rem',
+          fontWeight: '600',
+          lineHeight: '1.5',
+          marginTop: '1.25rem',
+          marginBottom: '0.5rem',
+          '@screen sm': {
+            fontSize: '1.5rem',
+            lineHeight: '2rem',
+          }
+        },
+        p: {
+          fontSize: '0.875rem',
+          lineHeight: '1.6',
+          marginTop: '0.5rem',
+          marginBottom: '0.5rem',
+        },
+        a: {
+          color: 'var(--tw-prose-links)',
+          textDecoration: 'underline',
+          fontWeight: '500',
+        },
+        'a:hover': {
+          textDecoration: 'none',
+        },
+        blockquote: {
+          fontStyle: 'italic',
+          fontWeight: '400',
+          borderLeftWidth: '3px',
+          borderLeftColor: '#0f766e',
+          padding: '12px 20px',
+          margin: '28px 0',
+          background: '#f5f5f4',
+          borderRadius: '0 8px 8px 0',
+        },
+        code: {
+          background: '#f5f5f4',
+          color: '#0f766e',
+          padding: '1px 6px',
+          borderRadius: '4px',
+          border: '1px solid #d6d3d1',
+        },
+        pre: {
+          background: '#f5f5f4',
+          border: '1px solid #d6d3d1',
+          borderRadius: '8px',
+          padding: '20px 24px',
+          overflow: 'auto',
+          '@screen sm': {
+            padding: '12px 14px',
+          },
+        },
+        'pre code': {
+          backgroundColor: 'transparent',
+          padding: '0',
+          borderRadius: '0',
+          fontSize: '14px',
+          lineHeight: '1.5',
+          whiteSpace: 'pre',
+          '@screen sm': {
+            fontSize: '12px',
+            lineHeight: '1.4',
+            tabSize: '2',
+          },
+        },
+        ul: {
+          marginTop: '1rem',
+          marginBottom: '1rem',
+        },
+        ol: {
+          marginTop: '1rem',
+          marginBottom: '1rem',
+        },
+        li: {
+          marginTop: '0.25rem',
+          marginBottom: '0.25rem',
+        },
+      },
+    }),
+  ],
+  corePlugins: {
+    preflight: true,
+  }
+}

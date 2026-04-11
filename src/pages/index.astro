@@ -1,0 +1,328 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BlogCard from "../components/BlogCard.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { getCollection } from "astro:content";
+import { sortPosts, sortProjects } from "../utils/sort-posts";
+
+const allBlogPosts = await getCollection(
+	"blog",
+	({ data }) => data.status === "published",
+);
+const allProjects = await getCollection(
+	"projects",
+	({ data }) => data.status === "published",
+);
+
+// Filter only featured items first, then sort by date latest, take top 3
+const recentPosts = sortPosts(
+	allBlogPosts.filter((post) => post.data.featured === true),
+).slice(0, 3);
+const featuredProjects = sortProjects(
+	allProjects.filter((project) => project.data.featured === true),
+).slice(0, 3);
+---
+
+<BaseLayout title='Nishant Kumar Sagar | Home'>
+	<Header />
+
+	<main class='flex-1'>
+		<!-- Hero Section -->
+		<section
+			class='relative py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 overflow-hidden'>
+			<div class='max-w-5xl mx-auto relative'>
+				<h1
+					class='text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 font-serif text-text'>
+					<span
+						class='text-3xl sm:text-4xl lg:text-5xl'
+						style='font-family: cursive; transform: rotate(-10deg);'
+						>Hello<span class='text-green-600'>,</span></span
+					>
+					<span class='text-xl sm:text-2xl lg:text-3xl'>I am</span>
+					<span class='text-green-600'>Nishant</span>
+				</h1>
+				<p
+					class='text-text-2 leading-relaxed font-sans max-w-2xl mb-0'
+					style="font-size: clamp(0.875rem, 2vw, 1.0625rem); line-height: 1.7;">
+					A Software engineer passionate about the scaled systems and system
+					architecture. I have been studying the architectures and tradeoffs for
+					good time. Currently, I am working on DSA-Cookbook and optimising the DSA
+					revision steps for seasoned coders. Also I am exploring transformers
+					architecture from inside out.
+					<br>
+					<br>
+					I publish my projects as open sourced and also contributing to CNCF landscape
+					recently. I keep learning along the way and write about the things I learn. My interests
+					lie in distributed systems, design decisions and tradeoffs.
+				</p>
+			</div>
+		</section>
+
+		<!-- Recent Blog Posts -->
+		{
+			recentPosts.length > 0 && (
+				<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>
+					<div class='max-w-5xl mx-auto'>
+						<div class='flex items-center justify-between mb-2 sm:mb-4'>
+							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
+								Recent Blog Posts
+							</h2>
+							<a
+								href='/blog'
+								class='text-accent hover:text-text transition-colors text-sm sm:text-base font-medium border-b border-transparent hover:border-accent font-sans'>
+								View all
+							</a>
+						</div>
+						<div>
+							{recentPosts.map((post) => (
+								<BlogCard
+									title={post.data.title}
+									excerpt={post.data.excerpt}
+									slug={post.id}
+									date={post.data.date}
+									tags={post.data.tags}
+									postNumber={post.postNumber}
+								/>
+							))}
+						</div>
+					</div>
+				</section>
+			)
+		}
+
+		<!-- Featured Projects -->
+		{
+			featuredProjects.length > 0 && (
+				<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>
+					<div class='max-w-5xl mx-auto'>
+						<div class='flex items-center justify-between mb-2 sm:mb-4'>
+							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
+								Featured Projects
+							</h2>
+							<a
+								href='/projects'
+								class='text-accent hover:text-text transition-colors text-sm sm:text-base font-medium border-b border-transparent hover:border-accent font-sans'>
+								View all
+							</a>
+						</div>
+						<div class='space-y-2 sm:space-y-3 lg:space-y-4'>
+							{featuredProjects.map((project) => (
+								<ProjectCard
+									title={project.data.title}
+									excerpt={project.data.excerpt}
+									slug={project.id}
+									date={project.data.date}
+									tags={project.data.tags}
+									github={project.data.github}
+								/>
+							))}
+						</div>
+					</div>
+				</section>
+			)
+		}
+
+		<!-- Empty State -->
+		{
+			recentPosts.length === 0 && featuredProjects.length === 0 && (
+				<section class='py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8'>
+					<div class='max-w-5xl mx-auto text-center'>
+						<p class='text-text-secondary text-sm sm:text-base'>
+							Content coming soon! Add your blog posts and
+							projects to the{" "}
+							<code class='bg-secondary/10 px-3 py-2 rounded text-sm text-text-primary'>
+								src/content/
+							</code>{" "}
+							directory.
+						</p>
+					</div>
+				</section>
+			)
+		}
+
+		<!-- Skills Section -->
+		<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>
+			<div class='max-w-5xl mx-auto'>
+				<button
+					id='skills-toggle'
+					class='flex items-center gap-2 mb-2 sm:mb-4 w-full text-left'>
+					<h2
+						class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
+						Skills
+					</h2>
+					<span
+						id='skills-arrow'
+						class='text-green-600 transition-transform duration-200'
+						>▼</span
+					>
+				</button>
+
+				<div
+					id='skills-content'
+					class='overflow-hidden max-h-0 transition-all duration-300 ease-in-out'>
+					<div
+						class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2'>
+						<div
+							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
+							<h3
+								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
+								Frontend
+							</h3>
+							<div class='flex flex-wrap gap-1'>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>React</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>TypeScript</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Next.js</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Tailwind</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Astro</span
+								>
+							</div>
+						</div>
+						<div
+							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
+							<h3
+								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
+								Backend
+							</h3>
+							<div class='flex flex-wrap gap-1'>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Node.js</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Express</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>PHP</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>SQL</span
+								>
+							</div>
+						</div>
+						<div
+							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
+							<h3
+								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
+								DevOps & Tools
+							</h3>
+							<div class='flex flex-wrap gap-1'>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Docker</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Azure</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Git</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Github Actions</span
+								>
+							</div>
+						</div>
+						<div
+							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
+							<h3
+								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
+								Can easily hop on
+							</h3>
+							<div class='flex flex-wrap gap-1'>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Python</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>Django</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>FastAPI</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>PostgreSQL</span
+								>
+							</div>
+						</div>
+						<div
+							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
+							<h3
+								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
+								Languages
+							</h3>
+							<div class='flex flex-wrap gap-1'>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>C++</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>javascript</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>python</span
+								>
+								<span
+									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+									>php</span
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const toggle = document.getElementById("skills-toggle");
+				const content = document.getElementById("skills-content");
+				const arrow = document.getElementById("skills-arrow");
+
+				if (toggle && content && arrow) {
+					toggle.addEventListener("click", () => {
+						const isExpanded =
+							content.style.maxHeight !== "0px" &&
+							content.style.maxHeight !== "";
+
+						if (isExpanded) {
+							content.style.maxHeight = "0px";
+							arrow.style.transform = "rotate(0deg)";
+						} else {
+							content.style.maxHeight =
+								content.scrollHeight + "px";
+							arrow.style.transform = "rotate(180deg)";
+						}
+					});
+				}
+			});
+		</script>
+	</main>
+
+	<Footer />
+</BaseLayout>

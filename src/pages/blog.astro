@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+import { sortPosts } from '../utils/sort-posts';
+
+const allBlogPosts = await getCollection('blog', ({ data }) => data.status === 'published');
+
+const posts = sortPosts(allBlogPosts);
+---
+
+<BaseLayout title="Nishant Kumar Sagar | Blogs">
+  <Header />
+
+  <main class="flex-1">
+    <section class="py-6 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-5xl mx-auto">
+        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold font-sans text-green-600 underline decoration-green-600 mb-4">Blog</h1>
+
+        {posts.length > 0 ? (
+          <div>
+            {posts.map((post) => (
+              <BlogCard
+                title={post.data.title}
+                excerpt={post.data.excerpt}
+                slug={post.id}
+                date={post.data.date}
+                tags={post.data.tags}
+                postNumber={post.postNumber}
+              />
+            ))}
+          </div>
+        ) : (
+          <p class="text-text-2 text-sm sm:text-base">No blog posts yet.</p>
+        )}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

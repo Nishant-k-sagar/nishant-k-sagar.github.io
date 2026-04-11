@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { formatDate } from '../utils/format-date';
+import { generateTimeline } from '../utils/generate-timeline';
+
+const allEntries = await generateTimeline();
+
+// Filter and re-number Main Timeline (non-work entries)
+const mainEntries = allEntries
+  .filter(entry => entry.type !== 'work')
+  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  .map((entry, index) => ({ ...entry, number: index + 1 }))
+  .sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return (b.number || 0) - (a.number || 0);
+  });
+
+// Filter and re-number Experience Timeline (work entries only)
+const experienceEntries = allEntries
+  .filter(entry => entry.type === 'work')
+  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  .map((entry, index) => ({ ...entry, number: index + 1 }))
+  .sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return (b.number || 0) - (a.number || 0);
+  });
+---
+
+<BaseLayout title="Nishant Kumar Sagar | Timeline">
+  <Header />
+  
+  <main class="flex-1">
+    <section class="py-6 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-5xl mx-auto">
+        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold font-sans text-green-600 underline decoration-green-600 mb-4">Timeline</h1>
+        <p class="text-sm sm:text-base text-text-2 leading-relaxed font-sans mb-6">These are major events in the development journey so far. Still rolling.</p>
+        <!-- Timeline Tabs -->
+        <div class="flex space-x-4 mb-8 border-b border-border">
+          <button id="main-timeline-tab" class="px-4 py-3 text-sm font-medium font-sans text-text border-b-2 border-green-600 transition-all hover:text-green-600">Timeline</button>
+          <button id="experience-timeline-tab" class="px-4 py-3 text-sm font-medium font-sans text-text-2 border-b-2 border-transparent hover:text-text transition-all">Experience Timeline</button>
+        </div>
+    
+    <!-- Main Timeline Section -->
+    <div id="main-timeline-section" class="relative hidden">
+      <!-- Timeline vertical line -->
+      <div class="absolute left-2 sm:left-3 top-0 bottom-0 w-px bg-stone-300"></div>
+
+      <!-- Timeline entries -->
+      <div class="space-y-4 sm:space-y-6">
+      {mainEntries.map((entry) => (
+          <div class="relative pl-10 sm:pl-14">
+            <!-- Timeline number -->
+            <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 border-accent bg-bg text-accent text-xs font-mono flex items-center justify-center font-bold">
+              {entry.number}
+            </div>
+            
+            <!-- Date label -->
+            <div class="text-xs text-text-3 mb-1 font-mono">
+              {formatDate(entry.date)}
+            </div>
+            
+            <!-- Entry card -->
+            <div class={entry.type === 'project' ? 'mt-1' : ''}>
+              {entry.type === 'blog' ? (
+                <article class="group border-b border-border py-2.5 sm:py-3 hover:border-border-2 transition-colors">
+                   <h2 class:list={{
+                     "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent transition-colors leading-tight truncate": true,
+                     "text-green-600": entry.highlighted
+                   }}>
+                     <a href={`/blog/${entry.id.replace('blog-', '')}`}>
+                       {entry.title}
+                     </a>
+                   </h2>
+                   <p class="text-text-2 text-xs sm:text-sm leading-relaxed mb-0 truncate overflow-hidden text-ellipsis whitespace-nowrap">
+                     {entry.description}
+                   </p>
+                 </article>
+              ) : entry.type === 'project' ? (
+                <article class="bg-surface border border-border rounded-lg p-2.5 sm:p-3 hover:shadow-md transition-shadow">
+                      <h2 class:list={{
+                        "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent transition-colors leading-tight truncate": true,
+                        "text-green-600": entry.highlighted
+                      }}>
+                           <a href={`/projects/${entry.id.replace('project-', '')}`}>
+                             {entry.title}
+                           </a>
+                         <span class="ml-2 inline-block px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 shrink-0">
+                           Project
+                         </span>
+                      </h2>
+                   
+                   <p class="text-text-2 text-xs sm:text-sm leading-relaxed mb-1 line-clamp-1">
+                     {entry.description}
+                   </p>
+                 </article>
+              ) : (
+                <article class="border-b border-border py-2.5 sm:py-3">
+                   <h2 class:list={{
+                     "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 text-text": true,
+                     "text-green-600": entry.highlighted
+                   }}>
+                     <a href={`/timeline/${entry.id}`} class="hover:text-accent transition-colors">
+                       {entry.title}
+                     </a>
+                   </h2>
+                   <p class="text-text-2 text-xs sm:text-sm leading-relaxed mb-0">
+                     {entry.description}
+                   </p>
+                 </article>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Experience Timeline Section -->
+    <div id="experience-timeline-section" class="relative hidden">
+      <!-- Timeline vertical line -->
+      <div class="absolute left-2 sm:left-3 top-0 bottom-0 w-px bg-border"></div>
+
+      <!-- Timeline entries -->
+      <div class="space-y-4 sm:space-y-6">
+      {experienceEntries.map((entry) => (
+          <div class="relative pl-10 sm:pl-14">
+            <!-- Timeline number -->
+            <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 border-accent bg-bg text-accent text-xs font-mono flex items-center justify-center font-bold">
+              {entry.number}
+            </div>
+
+            <!-- Date label -->
+            <div class="text-xs text-text-3 mb-1 font-mono">
+              {formatDate(entry.date)}
+            </div>
+
+            <!-- Entry card -->
+            <div>
+                  <article class="group border-b border-border py-2.5 sm:py-3 hover:border-border-2 transition-colors">
+                       <h2 class:list={{
+                         "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent transition-colors leading-tight truncate": true,
+                         "text-green-600": entry.highlighted
+                       }}>
+                         <a href={`/timeline/${entry.id}`}>
+                           {entry.title}
+                         </a>
+                       </h2>
+                       <p class="text-text-2 text-xs sm:text-sm leading-relaxed mb-0 truncate overflow-hidden text-ellipsis whitespace-nowrap">
+                         {entry.description}
+                       </p>
+                     </article>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="text-xs xs:text-sm leading-relaxed font-sans mt-4">*Few past dates are not exact dates, I remembered the nearest events and listed them.</p>
+    <p class="text-xs xs:text-sm leading-relaxed font-sans ">*I am still updating this page as only content updation is left for now.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Run immediately before paint to prevent flash
+    (() => {
+      const STORAGE_KEY = 'timeline:active-tab';
+      const activeTab = localStorage.getItem(STORAGE_KEY);
+
+      // Hide all sections by default before DOM ready
+      document.write(`
+        <style>
+          #main-timeline-section,
+          #experience-timeline-section {
+            display: none;
+          }
+        </style>
+      `);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const mainTab = document.getElementById('main-timeline-tab') as HTMLElement | null;
+        const experienceTab = document.getElementById('experience-timeline-tab') as HTMLElement | null;
+        const mainSection = document.getElementById('main-timeline-section') as HTMLElement | null;
+        const experienceSection = document.getElementById('experience-timeline-section') as HTMLElement | null;
+
+        if (!mainTab || !experienceTab || !mainSection || !experienceSection) return;
+
+        function showMain() {
+          if (mainSection) mainSection.style.display = 'block';
+          if (experienceSection) experienceSection.style.display = 'none';
+          mainTab!.classList.add('border-green-600', 'text-text');
+          mainTab!.classList.remove('border-transparent', 'text-text-2');
+          experienceTab!.classList.remove('border-green-600', 'text-text');
+          experienceTab!.classList.add('border-transparent', 'text-text-2');
+          localStorage.setItem(STORAGE_KEY, 'main');
+        }
+
+        function showExperience() {
+          if (experienceSection) experienceSection.style.display = 'block';
+          if (mainSection) mainSection.style.display = 'none';
+          experienceTab!.classList.add('border-green-600', 'text-text');
+          experienceTab!.classList.remove('border-transparent', 'text-text-2');
+          mainTab!.classList.remove('border-green-600', 'text-text');
+          mainTab!.classList.add('border-transparent', 'text-text-2');
+          localStorage.setItem(STORAGE_KEY, 'experience');
+        }
+
+        // Restore state immediately
+        if (activeTab === 'experience') {
+          showExperience();
+        } else {
+          showMain();
+        }
+
+        mainTab.addEventListener('click', showMain);
+        experienceTab.addEventListener('click', showExperience);
+      });
+    })();
+  </script>
+
+  <Footer />
+</BaseLayout>

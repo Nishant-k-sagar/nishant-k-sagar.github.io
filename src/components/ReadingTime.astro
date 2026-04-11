@@ -1,0 +1,13 @@
+---
+import { readingTime } from "../utils/reading-time";
+
+interface Props {
+	content: string;
+}
+
+const { content } = Astro.props;
+---
+
+<span class='text-sm text-muted'>
+	{readingTime(content)}
+</span>

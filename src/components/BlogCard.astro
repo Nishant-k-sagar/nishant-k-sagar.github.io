@@ -1,0 +1,52 @@
+---
+import { formatDate } from "../utils/format-date";
+import { getPostUrl } from "../utils/urls";
+
+interface Props {
+	title: string;
+	excerpt: string;
+	slug: string;
+	date: string;
+	tags: string[];
+	postNumber?: number;
+}
+
+const { title, excerpt, slug, date, tags, postNumber } = Astro.props;
+
+const formattedDate = formatDate(date);
+
+const readTime = Math.ceil(excerpt.split(" ").length / 200);
+---
+
+<article
+	class='group border-b border-border dark:border-dark-border-2 py-2.5 sm:py-3 hover:border-border-2 dark:hover:border-dark-border-2 transition-colors'>
+	<div class='flex items-center justify-between mb-1'>
+		<time class='text-[10px] text-text-3 dark:text-dark-text-3'
+			>{formattedDate}</time
+		>
+		<span class='flex items-center gap-1 flex-wrap'>
+			{
+				tags.map((tag) => (
+					<span class='text-[10px] sm:text-xs px-1 py-0.5 sm:px-1.5 rounded-pill bg-bg-2/40 dark:bg-dark-bg-2/40 border-0 text-text-3 dark:text-dark-text-3'>
+						{tag}
+					</span>
+				))
+			}
+		</span>
+	</div>
+	<h2
+		class='text-base sm:text-lg lg:text-xl font-bold font-serif mb-1 sm:mb-1.5 group-hover:text-accent dark:group-hover:text-dark-accent transition-colors leading-tight flex items-center gap-1.5'>
+		{
+			postNumber && (
+				<span class='text-green-600 text-xs font-mono'>#{postNumber}</span>
+			)
+		}
+		<a href={getPostUrl(slug)} class='truncate'>
+			{title}
+		</a>
+	</h2>
+	<p
+		class='text-text-2 dark:text-dark-text-2 text-xs sm:text-sm leading-relaxed mb-0 line-clamp-1'>
+		{excerpt}
+	</p>
+</article>

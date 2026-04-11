@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects', ({ data }) => data.status === 'published');
+
+const projects = allProjects.sort((a, b) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+---
+
+<BaseLayout title="Nishant Kumar Sagar | Projects">
+  <Header />
+  
+  <main class="flex-1">
+    <section class="py-6 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-5xl mx-auto">
+         <h1 class="text-lg sm:text-xl lg:text-2xl font-bold font-sans text-green-600 underline decoration-green-600 mb-4">Projects</h1>
+         
+         {projects.length > 0 ? (
+           <div class="space-y-6">
+            {projects.map((project) => (
+              <ProjectCard
+                title={project.data.title}
+                excerpt={project.data.excerpt}
+                slug={project.id}
+                date={project.data.date}
+                tags={project.data.tags}
+                github={project.data.github}
+              />
+            ))}
+          </div>
+        ) : (
+          <p class="text-muted text-sm sm:text-base">No projects yet.</p>
+        )}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

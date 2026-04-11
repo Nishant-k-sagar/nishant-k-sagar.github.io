@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import TagBadge from '../../components/TagBadge.astro';
+import { formatDate } from '../../utils/format-date';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+---
+
+<BaseLayout title={`${project.data.title} | Projects`}>
+  <Header />
+  
+  <main class="flex-1">
+    <article class="py-4 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-5xl mx-auto">
+        <header class="mb-4">
+          <div class="grid grid-cols-[1fr_auto] items-end gap-x-4 mb-2">
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold font-serif text-primary">{project.data.title}</h1>
+            <time class="text-xs sm:text-sm text-muted">{formatDate(project.data.date)}</time>
+          </div>
+          
+          <div class="flex flex-wrap gap-2 mt-3 pl-0">
+            {project.data.tags.map((tag: string) => <TagBadge tag={tag} />)}
+          </div>
+        </header>
+        
+        <div class="prose prose-sm sm:prose-base prose-gray dark:prose-invert prose-headings:font-serif prose-headings:font-semibold prose-a:text-accent hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-4 prose-blockquote:italic prose-code:bg-paper-dark dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-paper-dark dark:prose-pre:bg-gray-800 prose-pre:text-primary max-w-none">
+          <Content />
+        </div>
+        
+
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>

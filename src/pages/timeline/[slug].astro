@@ -1,0 +1,41 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const timeline = await getCollection('timeline');
+  return timeline.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description || ''}>
+  <Header />
+  
+  <main class="flex-1">
+    <article class="py-4 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-5xl mx-auto">
+        <header class="mb-4">
+          <div class="grid grid-cols-[1fr_auto] items-end gap-x-4 mb-2">
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold font-serif text-primary">{entry.data.title}</h1>
+            <time class="text-xs sm:text-sm text-muted">{entry.data.date}</time>
+          </div>
+        </header>
+        
+        <div class="prose prose-sm sm:prose-base prose-gray dark:prose-invert prose-headings:font-serif prose-headings:font-semibold prose-a:text-accent hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-4 prose-blockquote:italic prose-code:bg-paper-dark dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-paper-dark dark:prose-pre:bg-gray-800 prose-pre:text-primary max-w-none">
+          <Content />
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>
