@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
-      - run: npx tsx scripts/generate-search-index.ts
+      - run: npx tsx scripts/generate-search-index-standalone.ts
       - uses: withastro/action@v3
 
   deploy:
