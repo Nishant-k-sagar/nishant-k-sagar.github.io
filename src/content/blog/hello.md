@@ -3,15 +3,15 @@ title: "Hello"
 date: "2026-04-04"
 tags: ["intro", "welcome"]
 status: "published"
-excerpt: "Welcome to my new corner of the internet! I'm excited to share my journey as a developer and creator."
+excerpt: "Welcome to this corner of the internet! I'm excited to share my journey as a developer and creator."
 featured: true
 highlighted: true
 pinned: true
 ---
 
-Hey, Thanks for visiting hello. I have built this portfolio to keep the progress as well as my projects and ideas in one place.
+Hey, Thanks for visiting hello. I have built this portfolio to keep track of the progress as well as my projects and ideas in one place.
 
-It will have the updates as soon as I learn something new or build something and gets some free time. Learnings will be updates in blogs and projects and other things will be kept in respective fields. Explore the website to know more about me.
+I will update this as soon as I learn something new or build something and gets some free time. Learnings will be updated in blogs and projects and other things will be kept in respective fields. Explore the website to know more about me.
 
 ## What do I do and what to expect from this corner of internet
 
