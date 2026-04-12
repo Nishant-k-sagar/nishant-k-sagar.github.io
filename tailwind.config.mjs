@@ -115,7 +115,7 @@ export default {
         },
         p: {
           fontSize: '0.875rem',
-          lineHeight: '1.6',
+          lineHeight: '1.5',
           marginTop: '0.5rem',
           marginBottom: '0.5rem',
         },
