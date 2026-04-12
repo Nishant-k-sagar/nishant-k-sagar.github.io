@@ -21,7 +21,7 @@ Major version represents breaking changes, APIs changes, things may stop working
 Minor version represents features,backward compatible. 
 Patch version represents bug fixes and safe updates, very small changes. 
 
-## Semver and Tags
+## SemVer and Tags
 
 While the versions can be represented using the semver, yet more information is added in the form of tags. 
 Some common tags are : 
