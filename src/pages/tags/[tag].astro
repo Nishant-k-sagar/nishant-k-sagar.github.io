@@ -5,7 +5,6 @@ import Footer from "../../components/Footer.astro";
 import BlogCard from "../../components/BlogCard.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
-import { sortPosts } from "../../utils/sort-posts";
 
 export async function getStaticPaths() {
 	const blogPosts = await getCollection(
@@ -50,10 +49,13 @@ const projects = allProjects.filter((project) =>
 	project.data.tags.some((t: string) => t.toLowerCase() === tag),
 );
 
-const allItems = [...blogPosts, ...projects].sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const allItems = [
+	...blogPosts.map((entry) => ({ kind: 'blog' as const, entry })),
+	...projects.map((entry) => ({ kind: 'project' as const, entry })),
+].sort((a, b) => new Date(b.entry.data.date).getTime() - new Date(a.entry.data.date).getTime());
 ---
 
-<BaseLayout title={`Posts tagged "${tag}"`}>
+<BaseLayout title={`Posts tagged "${tag}"`} description={`Posts and projects tagged ${tag}.`}>
 	<Header />
 
 	<main class='flex-1'>
@@ -68,24 +70,24 @@ const allItems = [...blogPosts, ...projects].sort((a, b) => new Date(b.data.date
 					allItems.length > 0 ? (
 						<div class="space-y-2 sm:space-y-3 lg:space-y-4">
 							{allItems.map((item) => {
-								if ('github' in item.data || 'live' in item.data) {
+								if (item.kind === 'project') {
 									return (
 										<ProjectCard
-											title={item.data.title}
-											excerpt={item.data.excerpt}
-											slug={item.id}
-											date={item.data.date}
-											tags={item.data.tags}
+											title={item.entry.data.title}
+											excerpt={item.entry.data.excerpt}
+											slug={item.entry.id}
+											date={item.entry.data.date}
+											tags={item.entry.data.tags}
 										/>
 									)
 								} else {
 									return (
 										<BlogCard
-											title={item.data.title}
-											excerpt={item.data.excerpt}
-											slug={item.id}
-											date={item.data.date}
-											tags={item.data.tags}
+											title={item.entry.data.title}
+											excerpt={item.entry.data.excerpt}
+											slug={item.entry.id}
+											date={item.entry.data.date}
+											tags={item.entry.data.tags}
 										/>
 									)
 								}

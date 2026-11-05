@@ -11,7 +11,7 @@ const allBlogPosts = await getCollection('blog', ({ data }) => data.status === '
 const posts = sortPosts(allBlogPosts);
 ---
 
-<BaseLayout title="Nishant Kumar Sagar | Blogs">
+<BaseLayout title="Nishant Kumar Sagar | Blogs" description="Articles on web development, tooling and workflow.">
   <Header />
 
   <main class="flex-1">

@@ -14,8 +14,6 @@ interface Props {
 const { title, excerpt, slug, date, tags, postNumber } = Astro.props;
 
 const formattedDate = formatDate(date);
-
-const readTime = Math.ceil(excerpt.split(" ").length / 200);
 ---
 
 <article

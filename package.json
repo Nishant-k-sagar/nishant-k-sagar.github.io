@@ -7,7 +7,11 @@
     "start": "astro dev --port 3000",
     "build": "astro build",
     "preview": "astro preview",
+    "check": "astro check",
     "astro": "astro"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nishant-k-sagar.github.io/sitemap-index.xml

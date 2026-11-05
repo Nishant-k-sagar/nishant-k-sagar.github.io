@@ -14,17 +14,17 @@ if (!nowPage) {
 const { Content } = await render(nowPage);
 ---
 
-<BaseLayout title={nowPage.data.title}>
+<BaseLayout title={nowPage.data.title} description="What I am working on right now.">
   <Header />
 
   <main class="flex-1">
     <article class="py-4 px-4 sm:px-6 lg:px-8">
       <div class="max-w-5xl mx-auto">
         <header class="mb-4">
-          <h1 class="text-3xl font-bold font-serif text-primary">{nowPage.data.title}</h1>
+          <h1 class="text-3xl font-bold font-serif text-text">{nowPage.data.title}</h1>
         </header>
 
-        <div class="prose prose-sm sm:prose-base prose-gray dark:prose-invert prose-headings:font-serif prose-headings:font-semibold prose-a:text-accent hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-4 prose-blockquote:italic prose-code:bg-paper-dark dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-paper-dark dark:prose-pre:bg-gray-800 prose-pre:text-primary max-w-none">
+        <div class="prose prose-sm sm:prose-base prose-gray dark:prose-invert prose-headings:font-serif prose-headings:font-semibold prose-a:text-accent hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-4 prose-blockquote:italic prose-code:bg-bg-2 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-bg-2 dark:prose-pre:bg-gray-800 prose-pre:text-text max-w-none">
           <Content />
         </div>
       </div>

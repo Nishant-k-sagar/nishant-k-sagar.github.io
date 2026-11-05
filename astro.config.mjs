@@ -7,7 +7,13 @@ export default defineConfig({
   site: 'https://nishant-k-sagar.github.io',
   base: '/',
   output: 'static',
-  integrations: [tailwind(), mdx(), sitemap()],
+  integrations: [
+    tailwind(),
+    mdx(),
+    sitemap({
+      filter: (page) => !page.includes('/404'),
+    }),
+  ],
   devToolbar: {
     enabled: false
   }

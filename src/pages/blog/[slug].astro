@@ -3,11 +3,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import TagBadge from '../../components/TagBadge.astro';
+import Prose from '../../components/Prose.astro';
 import { formatDate } from '../../utils/format-date';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection('blog', ({ data }) => data.status !== 'draft');
   return posts.map((post) => ({
     params: { slug: post.id },
     props: { post },
@@ -17,9 +18,25 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.seo_title ?? post.data.title,
+  description: post.data.seo_description ?? post.data.excerpt,
+  datePublished: new Date(post.data.date).toISOString(),
+  dateModified: new Date(post.data.date).toISOString(),
+  author: { '@type': 'Person', name: 'Nishant Kumar Sagar' },
+  image: new URL('/images/og-default.png', Astro.site).href,
+};
 ---
 
-<BaseLayout title={`${post.data.title} | Blog`}>
+<BaseLayout
+  title={`${post.data.seo_title ?? post.data.title} | Blog`}
+  description={post.data.seo_description ?? post.data.excerpt}
+  canonical={post.data.canonical_url}
+  type="article"
+  jsonLd={jsonLd}
+>
   <Header />
   
   <main class="flex-1">
@@ -27,8 +44,8 @@ const { Content } = await render(post);
       <div class="max-w-5xl mx-auto">
         <header class="mb-4">
           <div class="grid grid-cols-[1fr_auto] items-end gap-x-4 mb-2">
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold font-serif text-primary">{post.data.title}</h1>
-            <time class="text-xs sm:text-sm text-muted">{formatDate(post.data.date)}</time>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold font-serif text-text">{post.data.title}</h1>
+            <time class="text-xs sm:text-sm text-text-2">{formatDate(post.data.date)}</time>
           </div>
           
           <div class="flex flex-wrap gap-2 mt-3 pl-0">
@@ -36,9 +53,9 @@ const { Content } = await render(post);
           </div>
         </header>
         
-        <div class={`prose prose-sm sm:prose-base prose-gray dark:prose-invert prose-headings:font-serif prose-headings:font-semibold prose-a:text-accent hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-4 prose-blockquote:italic prose-code:bg-paper-dark dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-paper-dark dark:prose-pre:bg-gray-800 prose-pre:text-primary max-w-none ${post.id === 'dsa-cookbook' ? 'prose-pre:whitespace-pre-wrap' : ''}`}>
+        <Prose wrapCode={post.data.wrap_code}>
           <Content />
-        </div>
+        </Prose>
       </div>
     </article>
   </main>

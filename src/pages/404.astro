@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="Page not found" description="This page does not exist." noindex>
+  <Header />
+  <main class="flex-1">
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto">
+        <p class="font-mono text-sm text-accent-text mb-2">$ cd /this-page</p>
+        <h1 class="text-2xl sm:text-3xl font-bold font-serif text-text mb-3">404: no such file or directory</h1>
+        <p class="text-text-2 mb-6">The page you asked for moved or never existed. Try one of these instead.</p>
+        <ul class="space-y-2 text-sm">
+          <li><a class="text-accent hover:underline" href="/">Home</a></li>
+          <li><a class="text-accent hover:underline" href="/blog">Blog</a></li>
+          <li><a class="text-accent hover:underline" href="/projects">Projects</a></li>
+          <li><a class="text-accent hover:underline" href="/timeline">Timeline</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

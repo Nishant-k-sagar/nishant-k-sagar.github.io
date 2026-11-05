@@ -5,6 +5,7 @@ tags: ["react", "typescript", "cosmosdb"]
 status: "published"
 excerpt: "DSA-Cookbook is a collection of data structures and algorithms implemented in TypeScript and React."
 featured: true
+wrap_code: true
 ---
 This project is built for sole purpose of revising the DSA problems at the en-moment. DSA-Cookbook has all the famous DSA sheets. This project specifically targets the leetcode centric DSA problems and provides the intuition, approach, pseudo codes and step by step explanation of the problem. It also provides the C++ code implementation. 
 

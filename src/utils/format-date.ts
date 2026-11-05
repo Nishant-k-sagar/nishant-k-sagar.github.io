@@ -1,9 +1,3 @@
-export type DateFormat = 'default' | 'long' | 'short';
-
-export interface FormatOptions {
-  format?: DateFormat;
-}
-
 /**
  * Format ISO date string to dd-mm-yyyy format
  * Returns format like "10-04-2026"

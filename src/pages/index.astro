@@ -23,9 +23,20 @@ const recentPosts = sortPosts(
 const featuredProjects = sortProjects(
 	allProjects.filter((project) => project.data.featured === true),
 ).slice(0, 3);
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: 'Nishant Kumar Sagar',
+	url: 'https://nishant-k-sagar.github.io',
+	sameAs: [
+		'https://github.com/nishant-k-sagar',
+		'https://linkedin.com/in/nishant-k-sagar',
+	],
+};
 ---
 
-<BaseLayout title='Nishant Kumar Sagar | Home'>
+<BaseLayout title='Nishant Kumar Sagar | Home' jsonLd={jsonLd}>
 	<Header />
 
 	<main class='flex-1'>
@@ -123,10 +134,10 @@ const featuredProjects = sortProjects(
 			recentPosts.length === 0 && featuredProjects.length === 0 && (
 				<section class='py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8'>
 					<div class='max-w-5xl mx-auto text-center'>
-						<p class='text-text-secondary text-sm sm:text-base'>
+						<p class='text-text-2 text-sm sm:text-base'>
 							Content coming soon! Add your blog posts and
 							projects to the{" "}
-							<code class='bg-secondary/10 px-3 py-2 rounded text-sm text-text-primary'>
+							<code class='bg-bg-3 px-3 py-2 rounded text-sm text-text'>
 								src/content/
 							</code>{" "}
 							directory.

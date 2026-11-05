@@ -7,5 +7,14 @@ I will add more features If I come up with some interesting idea.
 
 keep visiting.
 
+## Development
+
+```sh
+npm ci
+npm run dev
+npm run build
+npm run check
+```
+
 
 
