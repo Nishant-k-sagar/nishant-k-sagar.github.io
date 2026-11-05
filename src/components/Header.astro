@@ -447,13 +447,11 @@ const searchActive =
 				const thumb = picker.querySelector('[data-sv-thumb]');
 				const hueInput = picker.querySelector('[data-hue-range]');
 				const hexInput = picker.querySelector('[data-hex-input]');
-				const layer1 = picker.querySelector('[data-hue-layer="1"]');
-				const layer2 = picker.querySelector('[data-hue-layer="2"]');
+				const square = picker.querySelector('[data-sv-square]');
 
 				if (hexInput) hexInput.value = hex;
 				if (hueInput) hueInput.value = String(hsl.hue);
-				if (layer1) layer1.style.background = `linear-gradient(to right, transparent, hsl(${hsl.hue}, 100%, 50%))`;
-				if (layer2) layer2.style.background = `linear-gradient(to bottom, rgba(255,255,255,0.85), transparent 55%, rgba(0,0,0,0.9))`;
+				if (square) square.style.setProperty('--sv-hue', String(hsl.hue));
 				if (thumb) {
 					thumb.style.left = `${clamp(hsl.sat, 0, 100)}%`;
 					thumb.style.top = `${clamp(100 - hsl.light, 0, 100)}%`;
@@ -550,7 +548,7 @@ const searchActive =
 							const hue = Number(picker.querySelector('[data-hue-range]')?.value ?? 0);
 							const hex = hexFromHsl(hue, sat, light);
 							const active = picker.dataset.activeSlot ?? 'bg';
-							const next = applyHexToSlot(picker, active, hex);
+							const next = applyHexToSlot(active, hex);
 							writePickerState(picker, next);
 						};
 						move(e);
@@ -583,7 +581,7 @@ const searchActive =
 					if (!parsed) return;
 					e.target.value = parsed;
 					const active = picker.dataset.activeSlot ?? 'bg';
-					const next = applyHexToSlot(picker, active, parsed);
+					const next = applyHexToSlot(active, parsed);
 					writePickerState(picker, next);
 				});
 				hexInput?.addEventListener('keydown', (e) => {
