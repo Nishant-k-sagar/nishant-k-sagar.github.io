@@ -1,5 +1,5 @@
 ---
-title: "Zz editor slug lock tests"
+title: "Zz renamed title after first save"
 date: "2026-11-06"
 tags: ["react", "vite", "cloud"]
 status: "published"
