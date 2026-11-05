@@ -19,6 +19,7 @@ const allProjects = await getCollection(
 // Filter only featured items first, then sort by date latest, take top 3
 const recentPosts = sortPosts(
 	allBlogPosts.filter((post) => post.data.featured === true),
+	allBlogPosts,
 ).slice(0, 3);
 const featuredProjects = sortProjects(
 	allProjects.filter((project) => project.data.featured === true),
@@ -227,7 +228,7 @@ const jsonLd = {
 							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
 							<h3
 								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
-								DevOps & Tools
+								DevOps &amp; Tools
 							</h3>
 							<div class='flex flex-wrap gap-1'>
 								<span

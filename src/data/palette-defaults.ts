@@ -5,7 +5,11 @@ export const PALETTE_DEFAULTS = {
 	darkBg: 8,
 	accentHue: 156,
 	accentSat: 65,
+	accentL: 30,
+	accentLD: 72,
 	inkHue: 156,
 	inkSat: 8,
+	inkL: 10,
+	inkLD: 97,
 	bgStyle: 'off',
 };

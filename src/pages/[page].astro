@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+
+// Standalone pages from src/content/pages/ (start-here, links, ...). The "now" page has its own route.
+export async function getStaticPaths() {
+  const pages = await getCollection('pages', ({ id, data }) => id !== 'now' && data.status === 'published');
+  return pages.map((page) => ({ params: { page: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<BaseLayout title={page.data.title} description={page.data.seo_description ?? page.data.excerpt}>
+  <Header />
+
+  <main class="flex-1">
+    <article class="py-4 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-5xl mx-auto">
+        <header class="mb-4">
+          <h1 class="text-3xl font-bold font-serif text-text">{page.data.title}</h1>
+        </header>
+
+        <div class="prose prose-sm sm:prose-base prose-gray dark:prose-invert prose-headings:font-serif prose-headings:font-semibold prose-a:text-accent hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-4 prose-blockquote:italic prose-code:bg-bg-2 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-bg-2 dark:prose-pre:bg-gray-800 prose-pre:text-text max-w-none">
+          <Content />
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>

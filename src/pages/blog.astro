@@ -9,6 +9,16 @@ import { sortPosts } from '../utils/sort-posts';
 const allBlogPosts = await getCollection('blog', ({ data }) => data.status === 'published');
 
 const posts = sortPosts(allBlogPosts);
+
+// Group by year (posts are already newest first). Year headings show only when posts span several years.
+const groups: { year: string; posts: typeof posts }[] = [];
+for (const post of posts) {
+  const year = post.data.date.slice(0, 4);
+  const last = groups[groups.length - 1];
+  if (last && last.year === year) last.posts.push(post);
+  else groups.push({ year, posts: [post] });
+}
+const showYears = groups.length > 1;
 ---
 
 <BaseLayout title="Nishant Kumar Sagar | Blogs" description="Articles on web development, tooling and workflow.">
@@ -21,15 +31,22 @@ const posts = sortPosts(allBlogPosts);
 
         {posts.length > 0 ? (
           <div>
-            {posts.map((post) => (
-              <BlogCard
-                title={post.data.title}
-                excerpt={post.data.excerpt}
-                slug={post.id}
-                date={post.data.date}
-                tags={post.data.tags}
-                postNumber={post.postNumber}
-              />
+            {groups.map((group) => (
+              <section>
+                {showYears && (
+                  <h2 class="text-sm font-semibold font-sans text-text-2 mt-6 mb-1 first:mt-0">{group.year}</h2>
+                )}
+                {group.posts.map((post) => (
+                  <BlogCard
+                    title={post.data.title}
+                    excerpt={post.data.excerpt}
+                    slug={post.id}
+                    date={post.data.date}
+                    tags={post.data.tags}
+                    postNumber={post.postNumber}
+                  />
+                ))}
+              </section>
             ))}
           </div>
         ) : (

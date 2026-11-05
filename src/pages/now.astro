@@ -5,7 +5,8 @@ import Footer from '../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
 
 const pages = await getCollection('pages');
-const nowPage = pages.find(page => page.data.status === 'published');
+// Other standalone pages live in the same collection, so pick this one by its file name (now.md).
+const nowPage = pages.find(page => page.id === 'now' && page.data.status === 'published');
 
 if (!nowPage) {
   throw new Error('Now page not found');

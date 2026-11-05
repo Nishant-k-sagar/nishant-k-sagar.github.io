@@ -1,5 +1,6 @@
 ---
 import { formatDate } from "../utils/format-date";
+import { getTagUrl } from "../utils/urls";
 
 interface Props {
 	title: string;
@@ -26,9 +27,7 @@ const formattedDate = formatDate(date);
 			{
 				tags
 					.map((tag) => (
-						<span class='text-[10px] px-0.5 py-0 rounded-sm bg-bg-2/40 dark:bg-dark-bg-2/40 border-0 text-text-3 dark:text-dark-text-3'>
-							{tag}
-						</span>
+						<a href={getTagUrl(tag)} class='text-[10px] px-0.5 py-0 rounded-sm bg-bg-2/40 dark:bg-dark-bg-2/40 border-0 text-text-3 dark:text-dark-text-3 hover:text-accent transition-colors'>{tag}</a>
 					))
 			}
 		</span>

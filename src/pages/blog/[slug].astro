@@ -4,19 +4,38 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import TagBadge from '../../components/TagBadge.astro';
 import Prose from '../../components/Prose.astro';
+import ReadingTime from '../../components/ReadingTime.astro';
 import { formatDate } from '../../utils/format-date';
+import { sortPosts } from '../../utils/sort-posts';
+import { getPostUrl } from '../../utils/urls';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => data.status !== 'draft');
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+  // Previous / next only walk through published posts, oldest to newest.
+  const published = sortPosts(posts.filter((p) => p.data.status === 'published')).reverse();
+  return posts.map((post) => {
+    const index = published.findIndex((p) => p.id === post.id);
+    const prev = index > 0 ? published[index - 1] : undefined;
+    const next = index >= 0 && index < published.length - 1 ? published[index + 1] : undefined;
+    return {
+      params: { slug: post.id },
+      props: {
+        post,
+        prev: prev && { id: prev.id, title: prev.data.title },
+        next: next && { id: next.id, title: next.data.title },
+      },
+    };
+  });
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post, prev, next } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Table of contents: h2 and h3 only, shown when the post has enough sections to be worth jumping around.
+const tocItems = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const showToc = tocItems.length >= 4;
+const updated = post.data.updated && post.data.updated !== post.data.date ? post.data.updated : undefined;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -24,7 +43,7 @@ const jsonLd = {
   headline: post.data.seo_title ?? post.data.title,
   description: post.data.seo_description ?? post.data.excerpt,
   datePublished: new Date(post.data.date).toISOString(),
-  dateModified: new Date(post.data.date).toISOString(),
+  dateModified: new Date(post.data.updated ?? post.data.date).toISOString(),
   author: { '@type': 'Person', name: 'Nishant Kumar Sagar' },
   image: new URL('/images/og-default.png', Astro.site).href,
 };
@@ -45,7 +64,14 @@ const jsonLd = {
         <header class="mb-4">
           <div class="grid grid-cols-[1fr_auto] items-end gap-x-4 mb-2">
             <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold font-serif text-text">{post.data.title}</h1>
-            <time class="text-xs sm:text-sm text-text-2">{formatDate(post.data.date)}</time>
+            <div class="text-xs sm:text-sm text-text-2 text-right">
+              <time datetime={post.data.date}>{formatDate(post.data.date)}</time>
+              <span aria-hidden="true"> &middot; </span>
+              <ReadingTime content={post.body ?? ''} />
+              {updated && (
+                <div class="text-text-3">Updated <time datetime={updated}>{formatDate(updated)}</time></div>
+              )}
+            </div>
           </div>
           
           <div class="flex flex-wrap gap-2 mt-3 pl-0">
@@ -53,9 +79,43 @@ const jsonLd = {
           </div>
         </header>
         
+        {showToc && (
+          <details class="mb-5 rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm">
+            <summary class="cursor-pointer font-sans font-semibold text-text">On this page</summary>
+            <ol class="mt-2 mb-0 list-none space-y-1 p-0">
+              {tocItems.map((h) => (
+                <li class:list={[h.depth === 3 && 'pl-4']}>
+                  <a href={`#${h.slug}`} class="text-text-2 hover:text-accent-text transition-colors">{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        )}
+
         <Prose wrapCode={post.data.wrap_code}>
           <Content />
         </Prose>
+
+        {(prev || next) && (
+          <nav aria-label="More posts" class="mt-10 pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div>
+              {prev && (
+                <a href={getPostUrl(prev.id)} class="group block">
+                  <span class="block text-xs text-text-3 mb-0.5">Previous</span>
+                  <span class="font-serif font-bold text-text group-hover:text-accent-text transition-colors">{prev.title}</span>
+                </a>
+              )}
+            </div>
+            <div class="sm:text-right">
+              {next && (
+                <a href={getPostUrl(next.id)} class="group block">
+                  <span class="block text-xs text-text-3 mb-0.5">Next</span>
+                  <span class="font-serif font-bold text-text group-hover:text-accent-text transition-colors">{next.title}</span>
+                </a>
+              )}
+            </div>
+          </nav>
+        )}
       </div>
     </article>
   </main>

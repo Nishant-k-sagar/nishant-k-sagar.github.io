@@ -18,7 +18,7 @@ const searchActive =
 <div id="page-loader" class="fixed top-0 left-0 h-1 bg-accent z-[100] transition-all duration-300 ease-out w-0 opacity-0 pointer-events-none"></div>
 
 <header
-	class='bg-bg border-b border-stone-200 dark:border-zinc-800 relative z-50'>
+	class='bg-bg border-b border-border sticky top-0 z-50'>
 	<nav class='relative w-full px-4 sm:px-6 lg:px-8'>
 		<div class='flex items-center justify-between h-12 sm:h-14'>
 			<a
@@ -28,7 +28,7 @@ const searchActive =
 			</a>
 
 			<!-- Desktop Navigation -->
-			<div class='hidden md:flex items-center gap-8'>
+			<div class='hidden md:flex items-center gap-6'>
 				{
 					navItems.map((item) => (
 						<a
@@ -47,7 +47,7 @@ const searchActive =
 				}
 				<button
 					type='button'
-					class='search-toggle w-6 h-6 rounded flex items-center justify-center hover:bg-bg-3 transition-colors'
+					class='search-toggle w-9 h-9 rounded-lg flex items-center justify-center hover:bg-bg-3 transition-colors'
 					aria-label='Search'
 					aria-controls='header-search'
 					aria-expanded='false'
@@ -75,7 +75,7 @@ const searchActive =
 				<BackgroundPicker />
 				<button
 					id='theme-toggle'
-					class='w-6 h-6 rounded flex items-center justify-center hover:bg-bg-3 transition-colors'>
+					class='w-9 h-9 rounded-lg flex items-center justify-center hover:bg-bg-3 transition-colors'>
 					<svg
 						class='w-4 h-4 text-text'
 						fill='none'
@@ -92,10 +92,10 @@ const searchActive =
 			</div>
 
 			<!-- Mobile Navigation Buttons -->
-			<div class='md:hidden flex items-center gap-2'>
+			<div class='md:hidden flex items-center gap-0.5'>
 				<button
 					type='button'
-					class='search-toggle w-6 h-6 bg-bg rounded flex items-center justify-center hover:bg-bg-2 transition-colors'
+					class='search-toggle w-9 h-9 bg-bg rounded-lg flex items-center justify-center hover:bg-bg-2 transition-colors'
 					aria-label='Search'
 					aria-controls='header-search'
 					aria-expanded='false'
@@ -123,7 +123,7 @@ const searchActive =
 				<BackgroundPicker />
 				<button
 					id='mobile-theme-toggle'
-					class='w-6 h-6 bg-bg flex items-center justify-center hover:bg-bg-2 transition-colors'>
+					class='w-9 h-9 bg-bg rounded-lg flex items-center justify-center hover:bg-bg-2 transition-colors'>
 					<svg
 						class='w-4 h-4 text-text'
 						fill='none'
@@ -139,7 +139,9 @@ const searchActive =
 				</button>
 				<button
 					id='mobile-menu-toggle'
-					class='w-6 h-6 flex items-center justify-center'>
+						type='button'
+						aria-label='Toggle menu'
+						class='w-9 h-9 rounded-lg flex items-center justify-center hover:bg-bg-3 transition-colors'>
 					<!-- Hamburger Icon -->
 					<svg
 						id='hamburger-icon'
@@ -375,7 +377,8 @@ const searchActive =
 				}
 				const lightness = (max + min) / 2;
 				const saturation = chroma === 0 ? 0 : chroma / (1 - Math.abs(2 * lightness - 1));
-				return { hue: Math.round(hue), sat: Math.round(clamp(saturation * 100, 0, 100)), light: Math.round(lightness * 100) };
+				const round1 = (v) => Math.round(v * 10) / 10;
+				return { hue: round1(hue), sat: round1(clamp(saturation * 100, 0, 100)), light: round1(lightness * 100) };
 			}
 			function hexFromHsl(hue, sat, light) {
 				const h = ((hue % 360) + 360) % 360 / 60;
@@ -406,8 +409,9 @@ const searchActive =
 					accentHue: Math.floor(Math.random() * 360),
 					accentSat: Math.floor(45 + Math.random() * 36),
 					inkHue: Math.floor(Math.random() * 360),
-					inkSat: Math.floor(6 + Math.random() * 9),
-					bgStyle: 'off',
+						inkSat: Math.floor(6 + Math.random() * 9),
+						accentL: 30, accentLD: 72, inkL: 10, inkLD: 97,
+						bgStyle: 'off',
 				};
 			}
 
@@ -429,34 +433,90 @@ const searchActive =
 				});
 			}
 
-			function hexForSlot(palette, slot) {
-				if (slot === 'bg') return hexFromHsl(palette.bgHue, palette.bgSat, document.documentElement.classList.contains("dark") ? palette.darkBg : palette.lightBg);
-				if (slot === 'accent') return hexFromHsl(palette.accentHue, palette.accentSat, document.documentElement.classList.contains("dark") ? 72 : 30);
-				return hexFromHsl(palette.inkHue, palette.inkSat, document.documentElement.classList.contains("dark") ? 97 : 10);
+			function isDarkMode() {
+				return document.documentElement.classList.contains("dark");
+			}
+
+			function getSlotHsl(palette, slot) {
+				const dark = isDarkMode();
+				if (slot === 'bg') return { h: palette.bgHue, s: palette.bgSat, l: dark ? palette.darkBg : palette.lightBg };
+				if (slot === 'accent') return { h: palette.accentHue, s: palette.accentSat, l: dark ? palette.accentLD : palette.accentL };
+				return { h: palette.inkHue, s: palette.inkSat, l: dark ? palette.inkLD : palette.inkL };
+			}
+
+			function luminance(hex) {
+				const v = parseInt(hex.slice(1), 16);
+				const ch = [v >> 16, (v >> 8) & 0xff, v & 0xff].map((c) => {
+					const x = c / 255;
+					return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+				});
+				return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+			}
+			function contrastRatio(a, b) {
+				const la = luminance(a);
+				const lb = luminance(b);
+				return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+			}
+			function writeContrast(picker, palette) {
+				const bg = hexFromHsl(...Object.values(getSlotHsl(palette, 'bg')));
+				const rows = [['ink', 'Text on background'], ['accent', 'Accent on background']];
+				picker.querySelectorAll('[data-contrast]').forEach((el) => {
+					const slot = el.getAttribute('data-contrast');
+					const hex = hexFromHsl(...Object.values(getSlotHsl(palette, slot)));
+					const ratio = contrastRatio(hex, bg);
+					const pass = ratio >= 4.5;
+					el.querySelector('[data-contrast-value]').textContent = `${ratio.toFixed(1)}:1`;
+					const badge = el.querySelector('[data-contrast-badge]');
+					badge.textContent = pass ? 'Readable' : ratio >= 3 ? 'Low' : 'Poor';
+					badge.className = 'rounded-full px-2 py-0.5 text-[10px] font-semibold border ' + (pass ? 'border-accent text-accent-text' : 'border-red-600 text-red-700');
+				});
 			}
 
 			function writePickerState(picker, palette) {
 				palette = palette ?? window.__palette?.current() ?? DEFAULTS;
 				syncBgStyleButtons(picker, palette.bgStyle ?? 'off');
+				writeContrast(picker, palette);
 
 				const active = picker.dataset.activeSlot ?? 'bg';
-				const hex = hexForSlot(palette, active);
-				const hsl = hslFromHex(hex);
-				if (!hsl) return;
+				const { h, s, l } = getSlotHsl(palette, active);
+				const hex = hexFromHsl(h, s, l);
 
 				const thumb = picker.querySelector('[data-sv-thumb]');
 				const hueInput = picker.querySelector('[data-hue-range]');
 				const hexInput = picker.querySelector('[data-hex-input]');
 				const square = picker.querySelector('[data-sv-square]');
 
-				if (hexInput) hexInput.value = hex;
-				if (hueInput) hueInput.value = String(hsl.hue);
-				if (square) square.style.setProperty('--sv-hue', String(hsl.hue));
+				if (hexInput && document.activeElement !== hexInput) hexInput.value = hex;
+				if (hueInput) hueInput.value = String(Math.round(h));
+				if (square) square.style.setProperty('--sv-hue', String(Math.round(h)));
 				if (thumb) {
-					thumb.style.left = `${clamp(hsl.sat, 0, 100)}%`;
-					thumb.style.top = `${clamp(100 - hsl.light, 0, 100)}%`;
+					thumb.style.left = `${clamp(s, 0, 100)}%`;
+					thumb.style.top = `${clamp(100 - l, 0, 100)}%`;
 					thumb.style.background = hex;
 				}
+			}
+
+			// Writes an exact HSL value into one slot (no clamping beyond 0-100).
+			function applyHslToSlot(slot, h, sat, light) {
+				const dark = isDarkMode();
+				const next = {};
+				if (slot === 'bg') {
+					next.bgHue = h;
+					next.bgSat = sat;
+					if (dark) next.darkBg = light;
+					else next.lightBg = light;
+				} else if (slot === 'accent') {
+					next.accentHue = h;
+					next.accentSat = sat;
+					if (dark) next.accentLD = light;
+					else next.accentL = light;
+				} else {
+					next.inkHue = h;
+					next.inkSat = sat;
+					if (dark) next.inkLD = light;
+					else next.inkL = light;
+				}
+				return window.__palette?.preview(next) ?? next;
 			}
 
 			function applyHexToSlot(slot, hex) {
@@ -464,30 +524,17 @@ const searchActive =
 				if (!parsed) return null;
 				const hsl = hslFromHex(parsed);
 				if (!hsl) return null;
-				const current = window.__palette?.current() ?? {};
-				const next = { ...current };
-
-				if (slot === 'bg') {
-					next.bgHue = hsl.hue;
-					next.bgSat = clamp(hsl.sat, 0, 70);
-					if (document.documentElement.classList.contains("dark")) next.darkBg = clamp(hsl.light, 4, 22);
-					else next.lightBg = clamp(hsl.light, 68, 97);
-				}
-				if (slot === 'accent') {
-					next.accentHue = hsl.hue;
-					next.accentSat = clamp(hsl.sat, 20, 85);
-				}
-				if (slot === 'ink') {
-					next.inkHue = hsl.hue;
-					next.inkSat = clamp(hsl.sat, 0, 18);
-				}
-				return window.__palette?.preview(next) ?? next;
+				const current = window.__palette?.current() ?? DEFAULTS;
+				// Greys and black/white have no hue: keep the current one so the hue slider does not jump.
+				const hue = hsl.sat === 0 ? getSlotHsl(current, slot).h : hsl.hue;
+				return applyHslToSlot(slot, hue, hsl.sat, hsl.light);
 			}
 
 			pickers.forEach((picker) => {
 				const toggle = picker.querySelector(".bg-picker-toggle");
 				const panel = picker.querySelector(".bg-picker-panel");
 				picker.dataset.activeSlot = 'bg';
+				let snapshot = null;
 
 				try {
 					writePickerState(picker, window.__palette?.current());
@@ -496,6 +543,10 @@ const searchActive =
 				toggle?.addEventListener("click", () => {
 					if (!panel) return;
 					const willOpen = panel.classList.contains("hidden");
+					if (willOpen) {
+						snapshot = { palette: window.__palette?.current(), original: window.__palette?.isOriginal() };
+						writePickerState(picker, snapshot.palette);
+					}
 					closePalettePanels(picker);
 					panel.classList.toggle("hidden", !willOpen);
 					toggle.setAttribute("aria-expanded", String(willOpen));
@@ -546,9 +597,8 @@ const searchActive =
 							const sat = Math.round((x / rect.width) * 100);
 							const light = Math.round(100 - (y / rect.height) * 100);
 							const hue = Number(picker.querySelector('[data-hue-range]')?.value ?? 0);
-							const hex = hexFromHsl(hue, sat, light);
 							const active = picker.dataset.activeSlot ?? 'bg';
-							const next = applyHexToSlot(active, hex);
+							const next = applyHslToSlot(active, hue, sat, light);
 							writePickerState(picker, next);
 						};
 						move(e);
@@ -594,6 +644,21 @@ const searchActive =
 					}
 				});
 
+				const dropper = picker.querySelector('[data-role="dropper"]');
+				if (dropper && 'EyeDropper' in window) {
+					dropper.classList.remove('hidden');
+					dropper.addEventListener('click', async () => {
+						try {
+							const result = await new window.EyeDropper().open();
+							const active = picker.dataset.activeSlot ?? 'bg';
+							const next = applyHexToSlot(active, result.sRGBHex);
+							writePickerState(picker, next);
+						} catch {
+							// user cancelled the eyedropper
+						}
+					});
+				}
+
 				picker.querySelectorAll("[data-basic]").forEach((button) => {
 					button.addEventListener("click", () => {
 						const hex = button.getAttribute("data-basic");
@@ -609,11 +674,16 @@ const searchActive =
 						try {
 							const raw = button.getAttribute("data-preset");
 							if (!raw) return;
-							const payload = JSON.parse(raw);
+							const payload = { accentL: DEFAULTS.accentL, accentLD: DEFAULTS.accentLD, inkL: DEFAULTS.inkL, inkLD: DEFAULTS.inkLD, ...JSON.parse(raw) };
 							const previewed = window.__palette?.preview(payload) ?? payload;
 							writePickerState(picker, previewed);
 						} catch {}
 					});
+				});
+
+				picker.querySelector("[data-role='original']")?.addEventListener("click", () => {
+					const restored = window.__palette?.showOriginal() ?? DEFAULTS;
+					writePickerState(picker, restored);
 				});
 
 				picker.querySelector("[data-role='shuffle']")?.addEventListener("click", () => {
@@ -623,18 +693,25 @@ const searchActive =
 
 				const applyButton = picker.querySelector("[data-role='apply']");
 				applyButton?.addEventListener("click", () => {
-					window.__palette?.preview(window.__palette.current());
+					if (!window.__palette?.isOriginal()) window.__palette?.preview(window.__palette.current());
+					snapshot = null;
 					panel?.classList.add("hidden");
 					toggle?.setAttribute("aria-expanded", "false");
 				});
 
 				picker.querySelector("[data-role='cancel']")?.addEventListener("click", () => {
+					// Undo any previewed changes made since the panel was opened.
+					if (snapshot) {
+						const restored = snapshot.original ? window.__palette?.showOriginal() : window.__palette?.preview(snapshot.palette);
+						writePickerState(picker, restored);
+					}
 					panel?.classList.add("hidden");
 					toggle?.setAttribute("aria-expanded", "false");
 				});
 
 				picker.querySelector("[data-role='save']")?.addEventListener("click", () => {
 					const ok = window.__palette?.save();
+					if (ok) snapshot = { palette: window.__palette?.current(), original: window.__palette?.isOriginal() };
 					const button = picker.querySelector("[data-role='save']");
 					if (button) {
 						const original = button.textContent;

@@ -71,7 +71,7 @@ const imageUrl = new URL(image, Astro.site).href;
         <script is:inline>
       (function () {
         var STORAGE_KEY = 'ns:palette'
-        var DEFAULTS = { bgHue: 156, bgSat: 50, lightBg: 96, darkBg: 8, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8, bgStyle: 'off' }
+        var DEFAULTS = { bgHue: 156, bgSat: 50, lightBg: 96, darkBg: 8, accentHue: 156, accentSat: 65, accentL: 30, accentLD: 72, inkHue: 156, inkSat: 8, inkL: 10, inkLD: 97, bgStyle: 'off' }
 
         function finite(value, fallback) { var n = Number(value); return Number.isFinite(n) ? n : fallback }
         function clamp(value, min, max) { return Math.min(max, Math.max(min, value)) }
@@ -81,17 +81,23 @@ const imageUrl = new URL(image, Astro.site).href;
           p = p || {}
           return {
             bgHue: wrapHue(p.bgHue, DEFAULTS.bgHue),
-            bgSat: part(p, 'bgSat', DEFAULTS.bgSat, 0, 70),
-            lightBg: part(p, 'lightBg', DEFAULTS.lightBg, 68, 97),
-            darkBg: part(p, 'darkBg', DEFAULTS.darkBg, 4, 22),
+            bgSat: part(p, 'bgSat', DEFAULTS.bgSat, 0, 100),
+            lightBg: part(p, 'lightBg', DEFAULTS.lightBg, 0, 100),
+            darkBg: part(p, 'darkBg', DEFAULTS.darkBg, 0, 100),
             accentHue: wrapHue(p.accentHue, DEFAULTS.accentHue),
-            accentSat: part(p, 'accentSat', DEFAULTS.accentSat, 20, 85),
+            accentSat: part(p, 'accentSat', DEFAULTS.accentSat, 0, 100),
+            accentL: part(p, 'accentL', DEFAULTS.accentL, 0, 100),
+            accentLD: part(p, 'accentLD', DEFAULTS.accentLD, 0, 100),
             inkHue: wrapHue(p.inkHue, DEFAULTS.inkHue),
-            inkSat: part(p, 'inkSat', DEFAULTS.inkSat, 0, 18),
+            inkSat: part(p, 'inkSat', DEFAULTS.inkSat, 0, 100),
+            inkL: part(p, 'inkL', DEFAULTS.inkL, 0, 100),
+            inkLD: part(p, 'inkLD', DEFAULTS.inkLD, 0, 100),
             bgStyle: p && (p.bgStyle === 'procedural' ? 'procedural' : 'off'),
           }
         }
-        function hsl(h, s, l) { return 'hsl(' + Math.round(h * 10) / 10 + ', ' + Math.round(s) + '%, ' + l + '%)' }
+        function hsl(h, s, l) { return 'hsl(' + Math.round(h * 10) / 10 + ', ' + Math.round(s * 10) / 10 + '%, ' + Math.round(l * 10) / 10 + '%)' }
+        // Shift lightness away from a base: toward the darker side when the base is light, else toward the lighter side.
+        function shade(l, amount) { return clamp(l > 50 ? l - amount : l + amount, 0, 100) }
         function build(p) {
           var h = p.bgHue
           var s = p.bgSat
@@ -101,38 +107,38 @@ const imageUrl = new URL(image, Astro.site).href;
           var accentSat = p.accentSat
           var ink = p.inkHue
           var inkSat = p.inkSat
-          var bg2Sat = clamp(s - 15, 0, 70)
-          var bg3Sat = clamp(s - 20, 0, 70)
-          var surfaceSat = clamp(s * 0.45, 0, 38)
-          var borderSat = clamp(s * 0.45, 5, 35)
+          var bg2Sat = clamp(s - 15, 0, 100)
+          var bg3Sat = clamp(s - 20, 0, 100)
+          var surfaceSat = clamp(s * 0.45, 0, 100)
+          var borderSat = clamp(s * 0.45, 0, 100)
           return [
             ':root[data-palette="custom"] {',
             '--color-bg: ' + hsl(h, s, light) + ';',
-            '--color-bg-2: ' + hsl(h, bg2Sat, clamp(light - 6, 60, 93)) + ';',
-            '--color-bg-3: ' + hsl(h, bg3Sat, clamp(light - 12, 52, 88)) + ';',
-            '--color-surface: ' + hsl(h, surfaceSat, clamp(light + 3, 78, 99)) + ';',
-            '--color-border: ' + hsl(h, borderSat, clamp(light - 14, 45, 82)) + ';',
-            '--color-border-2: ' + hsl(h, borderSat, clamp(light - 34, 25, 66)) + ';',
-            '--color-text: ' + hsl(ink, inkSat, 10) + ';',
-            '--color-text-2: ' + hsl(ink, inkSat, 33) + ';',
-            '--color-text-3: ' + hsl(ink, inkSat, 64) + ';',
-            '--color-accent: ' + hsl(a, accentSat, 30) + ';',
-            '--color-accent-text: ' + hsl(a, accentSat, 26) + ';',
-            '--color-accent-bg: ' + hsl(a, clamp(accentSat * 0.35, 10, 40), 94) + ';',
+            '--color-bg-2: ' + hsl(h, bg2Sat, shade(light, 6)) + ';',
+            '--color-bg-3: ' + hsl(h, bg3Sat, shade(light, 12)) + ';',
+            '--color-surface: ' + hsl(h, surfaceSat, clamp(light > 50 ? light + 3 : light - 3, 0, 100)) + ';',
+            '--color-border: ' + hsl(h, borderSat, shade(light, 14)) + ';',
+            '--color-border-2: ' + hsl(h, borderSat, shade(light, 34)) + ';',
+            '--color-text: ' + hsl(ink, inkSat, p.inkL) + ';',
+            '--color-text-2: ' + hsl(ink, inkSat, clamp(p.inkL + 18, 0, 100)) + ';',
+            '--color-text-3: ' + hsl(ink, inkSat, clamp(p.inkL + 32, 0, 100)) + ';',
+            '--color-accent: ' + hsl(a, accentSat, p.accentL) + ';',
+            '--color-accent-text: ' + hsl(a, accentSat, clamp(p.accentL - 4, 0, 100)) + ';',
+            '--color-accent-bg: ' + hsl(a, clamp(accentSat * 0.35, 0, 40), 94) + ';',
             '}',
             '.dark[data-palette="custom"] {',
             '--color-bg: ' + hsl(h, s, dark) + ';',
-            '--color-bg-2: ' + hsl(h, s, clamp(dark + 4, 9, 28)) + ';',
-            '--color-bg-3: ' + hsl(h, s, clamp(dark + 8, 13, 32)) + ';',
-            '--color-surface: ' + hsl(h, surfaceSat, clamp(dark + 4, 9, 28)) + ';',
-            '--color-border: ' + hsl(h, borderSat, clamp(dark + 10, 14, 38)) + ';',
-            '--color-border-2: ' + hsl(h, borderSat, clamp(dark + 20, 22, 48)) + ';',
-            '--color-text: ' + hsl(ink, inkSat, 97) + ';',
-            '--color-text-2: ' + hsl(ink, inkSat, 74) + ';',
-            '--color-text-3: ' + hsl(ink, inkSat, 57) + ';',
-            '--color-accent: ' + hsl(a, accentSat, 72) + ';',
-            '--color-accent-text: ' + hsl(a, accentSat, 60) + ';',
-            '--color-accent-bg: ' + hsl(a, clamp(accentSat * 0.6, 25, 60), 14) + ';',
+            '--color-bg-2: ' + hsl(h, s, shade(dark, 4)) + ';',
+            '--color-bg-3: ' + hsl(h, s, shade(dark, 8)) + ';',
+            '--color-surface: ' + hsl(h, surfaceSat, shade(dark, 4)) + ';',
+            '--color-border: ' + hsl(h, borderSat, shade(dark, 10)) + ';',
+            '--color-border-2: ' + hsl(h, borderSat, shade(dark, 20)) + ';',
+            '--color-text: ' + hsl(ink, inkSat, p.inkLD) + ';',
+            '--color-text-2: ' + hsl(ink, inkSat, clamp(p.inkLD - 23, 0, 100)) + ';',
+            '--color-text-3: ' + hsl(ink, inkSat, clamp(p.inkLD - 40, 0, 100)) + ';',
+            '--color-accent: ' + hsl(a, accentSat, p.accentLD) + ';',
+            '--color-accent-text: ' + hsl(a, accentSat, clamp(p.accentLD - 12, 0, 100)) + ';',
+            '--color-accent-bg: ' + hsl(a, clamp(accentSat * 0.6, 0, 60), 14) + ';',
             '}'
           ].join('\n')
         }
@@ -147,6 +153,7 @@ const imageUrl = new URL(image, Astro.site).href;
         }
         var saved = load()
         var current = saved || Object.assign({}, DEFAULTS)
+        var original = !saved
         function setBgStyle(style) {
           var layer = document.querySelector('.bg-procedural')
           var opacity = style === 'procedural' ? '0.7' : '0'
@@ -171,20 +178,32 @@ const imageUrl = new URL(image, Astro.site).href;
           document.documentElement.dataset.palette = 'custom'
           setBgStyle(current.bgStyle)
         }
+        function showOriginal() {
+          original = true
+          current = Object.assign({}, DEFAULTS)
+          var style = document.getElementById('bg-palette-style')
+          if (style) style.remove()
+          try { delete document.documentElement.dataset.palette } catch (e) { document.documentElement.removeAttribute('data-palette') }
+          setBgStyle('off')
+          return Object.assign({}, current)
+        }
         function preview(p) {
+          original = false
           current = normalize(Object.assign({}, current, p || {}))
           render()
           return Object.assign({}, current)
         }
         function save() {
           try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(current))
+            if (original) localStorage.removeItem(STORAGE_KEY)
+            else localStorage.setItem(STORAGE_KEY, JSON.stringify(current))
             return true
           } catch (e) {
             return false
           }
         }
         function reset() {
+          original = true
           current = Object.assign({}, DEFAULTS)
           try { localStorage.removeItem(STORAGE_KEY) } catch (e) {}
           var style = document.getElementById('bg-palette-style')
@@ -199,6 +218,8 @@ const imageUrl = new URL(image, Astro.site).href;
           DEFAULTS: Object.assign({}, DEFAULTS),
           current: function () { return Object.assign({}, current) },
           preview: preview,
+          showOriginal: showOriginal,
+          isOriginal: function () { return original },
           save: save,
           reset: reset,
           setBgStyle: setBgStyle,
@@ -232,7 +253,7 @@ const imageUrl = new URL(image, Astro.site).href;
     /* Text */
     --color-text: #1c1917;
     --color-text-2: #57534e;
-    --color-text-3: #a8a29e;
+    --color-text-3: #6b6560;
 
     /* Accent */
     --color-accent: #0d9488;
@@ -280,7 +301,7 @@ const imageUrl = new URL(image, Astro.site).href;
 
     --color-text: #f8f8f8;
     --color-text-2: #b8b8bc;
-    --color-text-3: #88888f;
+    --color-text-3: #9a9aa3;
 
     --color-accent: #6ee7b7;
     --color-accent-bg: #064e3b;
@@ -330,6 +351,19 @@ const imageUrl = new URL(image, Astro.site).href;
   }
   a {
     transition: color 0.2s ease;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
   }
 
   .bg-procedural {

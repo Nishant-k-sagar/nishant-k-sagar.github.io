@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { formatDate } from '../utils/format-date';
+import { formatDate, dateValue } from '../utils/format-date';
 import { generateTimeline } from '../utils/generate-timeline';
 
 const allEntries = await generateTimeline();
@@ -10,7 +10,7 @@ const allEntries = await generateTimeline();
 // Filter and re-number Main Timeline (non-work entries)
 const mainEntries = allEntries
   .filter(entry => entry.type !== 'work')
-  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  .sort((a, b) => dateValue(a.date) - dateValue(b.date) || a.id.localeCompare(b.id))
   .map((entry, index) => ({ ...entry, number: index + 1 }))
   .sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
@@ -21,7 +21,7 @@ const mainEntries = allEntries
 // Filter and re-number Experience Timeline (work entries only)
 const experienceEntries = allEntries
   .filter(entry => entry.type === 'work')
-  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  .sort((a, b) => dateValue(a.date) - dateValue(b.date) || a.id.localeCompare(b.id))
   .map((entry, index) => ({ ...entry, number: index + 1 }))
   .sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
@@ -121,7 +121,7 @@ const experienceEntries = allEntries
     <!-- Experience Timeline Section -->
     <div id="experience-timeline-section" class="relative hidden">
       <!-- Timeline vertical line -->
-      <div class="absolute left-2 sm:left-3 top-0 bottom-0 w-px bg-border"></div>
+      <div class="absolute left-2 sm:left-3 top-0 bottom-0 w-px bg-stone-300"></div>
 
       <!-- Timeline entries -->
       <div class="space-y-4 sm:space-y-6">

@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import { dateValue } from './format-date';
 
 export interface TimelineEntry {
   id: string;
@@ -36,7 +37,7 @@ export async function generateTimeline(): Promise<TimelineEntry[]> {
         title: override?.title || post.data.title,
         type: 'blog' as const,
         description: override?.description || post.data.excerpt,
-        url: `/blog/${post.id}`,
+        url: `/blog/${post.id}/`,
         pinned: override?.pinned,
         highlighted: override?.highlighted ?? post.data.highlighted,
       };
@@ -55,7 +56,7 @@ export async function generateTimeline(): Promise<TimelineEntry[]> {
         title: override?.title || project.data.title,
         type: 'project' as const,
         description: override?.description || project.data.excerpt,
-        url: `/projects/${project.id}`,
+        url: `/projects/${project.id}/`,
         pinned: override?.pinned,
         highlighted: override?.highlighted ?? project.data.highlighted,
       };
@@ -78,7 +79,7 @@ export async function generateTimeline(): Promise<TimelineEntry[]> {
 
   // Sort chronologically (oldest first) to assign numbers
   const sortedOldestFirst = [...filteredEntries].sort((a, b) =>
-    new Date(a.date).getTime() - new Date(b.date).getTime()
+    dateValue(a.date) - dateValue(b.date) || a.id.localeCompare(b.id)
   );
 
   // Assign numbers

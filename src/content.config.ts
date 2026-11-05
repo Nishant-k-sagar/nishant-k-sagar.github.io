@@ -1,5 +1,9 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { isValidDate } from './utils/format-date';
+
+// Dates must be real dates (use YYYY-MM-DD). A typo fails the build instead of rendering "NaN-NaN-NaN".
+const dateString = z.string().refine(isValidDate, { message: 'Invalid date. Use YYYY-MM-DD, e.g. 2026-04-10' });
 
 
 const blog = defineCollection({
@@ -7,7 +11,8 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     slug: z.string().optional(),
-    date: z.string(),
+    date: dateString,
+    updated: dateString.optional(),
     tags: z.array(z.string()),
     status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
     excerpt: z.string(),
@@ -27,7 +32,7 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     slug: z.string().optional(),
-    date: z.string(),
+    date: dateString,
     tags: z.array(z.string()),
     excerpt: z.string(),
     status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
@@ -52,7 +57,7 @@ const pages = defineCollection({
 const timeline = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/timeline" }),
   schema: z.object({
-    date: z.string(),
+    date: dateString,
     title: z.string(),
     type: z.enum(['blog', 'project', 'milestone', 'achievement', 'work', 'note']),
     description: z.string().optional(),
