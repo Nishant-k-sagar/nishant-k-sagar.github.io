@@ -346,27 +346,68 @@ const searchActive =
 
 			// Appearance palette (stored locally in the browser, no server round-trip)
 			const pickers = document.querySelectorAll(".bg-picker");
-			const firstPanel = document.querySelector(".bg-picker-panel");
 			const DEFAULTS = window.__paletteDefaults ?? {};
-			const COLOR_CONTROLS = [...firstPanel.querySelectorAll("input[type=range]")].map((input) => ({
-				key: input.dataset.key,
-				role: input.dataset.role,
-				suffix: input.dataset.suffix ?? "",
-			}));
+
+			function clamp(value, min, max) {
+				return Math.min(max, Math.max(min, value));
+			}
+			function parseHex(hex) {
+				const cleaned = String(hex).trim().replace(/^#/, "");
+				return /^([0-9a-fA-F]{6})$/.test(cleaned) ? `#${cleaned.toUpperCase()}` : null;
+			}
+			function hslFromHex(hex) {
+				const clean = parseHex(hex);
+				if (!clean) return null;
+				const value = parseInt(clean.slice(1), 16);
+				const r = (value >> 16) / 255;
+				const g = ((value >> 8) & 0xff) / 255;
+				const b = (value & 0xff) / 255;
+				const max = Math.max(r, g, b);
+				const min = Math.min(r, g, b);
+				const chroma = max - min;
+				let hue = 0;
+				if (chroma !== 0) {
+					if (max === r) hue = ((g - b) / chroma) % 6;
+					else if (max === g) hue = (b - r) / chroma + 2;
+					else hue = (r - g) / chroma + 4;
+					hue *= 60;
+					if (hue < 0) hue += 360;
+				}
+				const lightness = (max + min) / 2;
+				const saturation = chroma === 0 ? 0 : chroma / (1 - Math.abs(2 * lightness - 1));
+				return { hue: Math.round(hue), sat: Math.round(clamp(saturation * 100, 0, 100)), light: Math.round(lightness * 100) };
+			}
+			function hexFromHsl(hue, sat, light) {
+				const h = ((hue % 360) + 360) % 360 / 60;
+				const s = sat / 100;
+				const l = light / 100;
+				const c = (1 - Math.abs(2 * l - 1)) * s;
+				const x = c * (1 - Math.abs((h % 2) - 1));
+				const m = l - c / 2;
+				let r = 0;
+				let g = 0;
+				let b = 0;
+				if (h >= 0 && h < 1) [r, g, b] = [c, x, 0];
+				if (h >= 1 && h < 2) [r, g, b] = [x, c, 0];
+				if (h >= 2 && h < 3) [r, g, b] = [0, c, x];
+				if (h >= 3 && h < 4) [r, g, b] = [0, x, c];
+				if (h >= 4 && h < 5) [r, g, b] = [x, 0, c];
+				if (h >= 5 && h < 6) [r, g, b] = [c, 0, x];
+				const part = (v) => Math.round((v + m) * 255).toString(16).padStart(2, "0");
+				return `#${part(r)}${part(g)}${part(b)}`.toUpperCase();
+			}
 
 			function randomPalette() {
-				const backgroundHue = Math.floor(Math.random() * 361);
-				const panel = document.querySelector(".bg-picker-panel");
-				const byRole = (role) => panel.querySelector(`[data-role='${role}']`);
 				return {
-					bgHue: backgroundHue,
-					bgSat: Math.floor(Number(byRole("bg-sat")?.min ?? 0) + Math.random() * (Number(byRole("bg-sat")?.max ?? 70) - Number(byRole("bg-sat")?.min ?? 0))),
-					lightBg: Math.floor(Number(byRole("light-bg")?.min ?? 68) + Math.random() * (Number(byRole("light-bg")?.max ?? 97) - Number(byRole("light-bg")?.min ?? 68))),
-					darkBg: Math.floor(Number(byRole("dark-bg")?.min ?? 4) + Math.random() * (Number(byRole("dark-bg")?.max ?? 22) - Number(byRole("dark-bg")?.min ?? 4))),
-					accentHue: Math.floor(Math.random() * 361),
-					accentSat: Math.floor(Number(byRole("accent-sat")?.min ?? 20) + Math.random() * (Number(byRole("accent-sat")?.max ?? 85) - Number(byRole("accent-sat")?.min ?? 20))),
-					inkHue: backgroundHue,
-					inkSat: Math.floor(Number(byRole("ink-sat")?.min ?? 0) + Math.random() * (Number(byRole("ink-sat")?.max ?? 18) - Number(byRole("ink-sat")?.min ?? 0))),
+					bgHue: Math.floor(Math.random() * 360),
+					bgSat: Math.floor(20 + Math.random() * 38),
+					lightBg: Math.floor(78 + Math.random() * 18),
+					darkBg: Math.floor(4 + Math.random() * 12),
+					accentHue: Math.floor(Math.random() * 360),
+					accentSat: Math.floor(45 + Math.random() * 36),
+					inkHue: Math.floor(Math.random() * 360),
+					inkSat: Math.floor(6 + Math.random() * 9),
+					bgStyle: 'off',
 				};
 			}
 
@@ -376,21 +417,6 @@ const searchActive =
 					other.querySelector(".bg-picker-panel")?.classList.add("hidden");
 					other.querySelector(".bg-picker-toggle")?.setAttribute("aria-expanded", "false");
 				});
-			}
-
-			function writePaletteControls(picker, palette) {
-				palette = palette ?? window.__palette?.current() ?? DEFAULTS;
-				for (const control of COLOR_CONTROLS) {
-					const input = picker.querySelector(`[data-role='${control.role}']`);
-					const output = picker.querySelector(`[data-role='${control.role}-value']`);
-					const value = Math.round(Number(palette[control.key] ?? DEFAULTS[control.key]));
-					if (input) {
-						input.value = String(value);
-						input.setAttribute("aria-valuetext", `${value}${control.suffix}`);
-					}
-					if (output) output.textContent = `${value}${control.suffix}`;
-				}
-				syncBgStyleButtons(picker, palette.bgStyle ?? 'off');
 			}
 
 			function syncBgStyleButtons(picker, style) {
@@ -403,34 +429,75 @@ const searchActive =
 				});
 			}
 
-			function readPaletteControls(picker) {
-				const palette = {};
-				for (const control of COLOR_CONTROLS) {
-					const input = picker.querySelector(`[data-role='${control.role}']`);
-					palette[control.key] = Number(input?.value ?? DEFAULTS[control.key]);
-				}
-				return palette;
+			function hexForSlot(palette, slot) {
+				if (slot === 'bg') return hexFromHsl(palette.bgHue, palette.bgSat, document.documentElement.classList.contains("dark") ? palette.darkBg : palette.lightBg);
+				if (slot === 'accent') return hexFromHsl(palette.accentHue, palette.accentSat, document.documentElement.classList.contains("dark") ? 72 : 30);
+				return hexFromHsl(palette.inkHue, palette.inkSat, document.documentElement.classList.contains("dark") ? 97 : 10);
 			}
 
-			function previewFromPicker(picker) {
-				const previewed = window.__palette?.preview(readPaletteControls(picker)) ?? readPaletteControls(picker);
-				writePaletteControls(picker, previewed);
+			function writePickerState(picker, palette) {
+				palette = palette ?? window.__palette?.current() ?? DEFAULTS;
+				syncBgStyleButtons(picker, palette.bgStyle ?? 'off');
+
+				const active = picker.dataset.activeSlot ?? 'bg';
+				const hex = hexForSlot(palette, active);
+				const hsl = hslFromHex(hex);
+				if (!hsl) return;
+
+				const thumb = picker.querySelector('[data-sv-thumb]');
+				const hueInput = picker.querySelector('[data-hue-range]');
+				const hexInput = picker.querySelector('[data-hex-input]');
+				const layer1 = picker.querySelector('[data-hue-layer="1"]');
+				const layer2 = picker.querySelector('[data-hue-layer="2"]');
+
+				if (hexInput) hexInput.value = hex;
+				if (hueInput) hueInput.value = String(hsl.hue);
+				if (layer1) layer1.style.background = `linear-gradient(to right, transparent, hsl(${hsl.hue}, 100%, 50%))`;
+				if (layer2) layer2.style.background = `linear-gradient(to bottom, rgba(255,255,255,0.85), transparent 55%, rgba(0,0,0,0.9))`;
+				if (thumb) {
+					thumb.style.left = `${clamp(hsl.sat, 0, 100)}%`;
+					thumb.style.top = `${clamp(100 - hsl.light, 0, 100)}%`;
+					thumb.style.background = hex;
+				}
+			}
+
+			function applyHexToSlot(slot, hex) {
+				const parsed = parseHex(hex);
+				if (!parsed) return null;
+				const hsl = hslFromHex(parsed);
+				if (!hsl) return null;
+				const current = window.__palette?.current() ?? {};
+				const next = { ...current };
+
+				if (slot === 'bg') {
+					next.bgHue = hsl.hue;
+					next.bgSat = clamp(hsl.sat, 0, 70);
+					if (document.documentElement.classList.contains("dark")) next.darkBg = clamp(hsl.light, 4, 22);
+					else next.lightBg = clamp(hsl.light, 68, 97);
+				}
+				if (slot === 'accent') {
+					next.accentHue = hsl.hue;
+					next.accentSat = clamp(hsl.sat, 20, 85);
+				}
+				if (slot === 'ink') {
+					next.inkHue = hsl.hue;
+					next.inkSat = clamp(hsl.sat, 0, 18);
+				}
+				return window.__palette?.preview(next) ?? next;
 			}
 
 			pickers.forEach((picker) => {
 				const toggle = picker.querySelector(".bg-picker-toggle");
 				const panel = picker.querySelector(".bg-picker-panel");
+				picker.dataset.activeSlot = 'bg';
 
 				try {
-					writePaletteControls(picker, window.__palette?.current());
-				} catch {
-					writePaletteControls(picker, DEFAULTS);
-				}
+					writePickerState(picker, window.__palette?.current());
+				} catch {}
 
 				toggle?.addEventListener("click", () => {
 					if (!panel) return;
 					const willOpen = panel.classList.contains("hidden");
-					if (willOpen) syncPaletteMode(picker);
 					closePalettePanels(picker);
 					panel.classList.toggle("hidden", !willOpen);
 					toggle.setAttribute("aria-expanded", String(willOpen));
@@ -450,9 +517,94 @@ const searchActive =
 					}
 				});
 
-				for (const control of COLOR_CONTROLS) {
-					picker.querySelector(`[data-role='${control.role}']`)?.addEventListener("input", () => previewFromPicker(picker));
+				// slot tabs
+				picker.querySelectorAll('[data-slot-tab]').forEach((button) => {
+					button.addEventListener("click", () => {
+						const slot = button.getAttribute('data-slot-tab');
+						if (!slot) return;
+						picker.dataset.activeSlot = slot;
+						picker.querySelectorAll('[data-slot-tab]').forEach((b) => {
+							const isActive = b.getAttribute('data-slot-tab') === slot;
+							b.setAttribute('aria-selected', String(isActive));
+							b.classList.toggle('border-accent', isActive);
+							b.classList.toggle('bg-accent', isActive);
+							b.classList.toggle('text-white', isActive);
+							b.classList.toggle('border-border', !isActive);
+							b.classList.toggle('text-text-2', !isActive);
+						});
+						writePickerState(picker);
+					});
+				});
+
+				// square interaction
+				const square = panel?.querySelector('[data-sv-square]');
+				if (square) {
+					square.addEventListener('pointerdown', (e) => {
+						e.preventDefault();
+						const rect = square.getBoundingClientRect();
+						const move = (ev) => {
+							const x = clamp(ev.clientX - rect.left, 0, rect.width);
+							const y = clamp(ev.clientY - rect.top, 0, rect.height);
+							const sat = Math.round((x / rect.width) * 100);
+							const light = Math.round(100 - (y / rect.height) * 100);
+							const hue = Number(picker.querySelector('[data-hue-range]')?.value ?? 0);
+							const hex = hexFromHsl(hue, sat, light);
+							const active = picker.dataset.activeSlot ?? 'bg';
+							const next = applyHexToSlot(picker, active, hex);
+							writePickerState(picker, next);
+						};
+						move(e);
+						const onMove = (ev) => move(ev);
+						const onUp = () => {
+							window.removeEventListener('pointermove', onMove);
+							window.removeEventListener('pointerup', onUp);
+						};
+						window.addEventListener('pointermove', onMove);
+						window.addEventListener('pointerup', onUp);
+					});
 				}
+				const hueRange = panel?.querySelector('[data-hue-range]');
+				hueRange?.addEventListener('input', (e) => {
+					const hue = Number(e.target.value);
+					const active = picker.dataset.activeSlot ?? 'bg';
+					const current = window.__palette?.current() ?? {};
+					const next = { ...current };
+					if (active === 'bg') next.bgHue = hue;
+					if (active === 'accent') next.accentHue = hue;
+					if (active === 'ink') next.inkHue = hue;
+					const previewed = window.__palette?.preview(next) ?? next;
+					writePickerState(picker, previewed);
+				});
+
+				const hexInput = panel?.querySelector('[data-hex-input]');
+				hexInput?.addEventListener('change', (e) => {
+					const value = e.target.value;
+					const parsed = parseHex(value);
+					if (!parsed) return;
+					e.target.value = parsed;
+					const active = picker.dataset.activeSlot ?? 'bg';
+					const next = applyHexToSlot(picker, active, parsed);
+					writePickerState(picker, next);
+				});
+				hexInput?.addEventListener('keydown', (e) => {
+					if (e.key === 'Enter') {
+						const parsed = parseHex(e.target.value);
+						if (!parsed) return;
+						const active = picker.dataset.activeSlot ?? 'bg';
+						const next = applyHexToSlot(active, parsed);
+						writePickerState(picker, next);
+					}
+				});
+
+				picker.querySelectorAll("[data-basic]").forEach((button) => {
+					button.addEventListener("click", () => {
+						const hex = button.getAttribute("data-basic");
+						if (!hex) return;
+						const active = picker.dataset.activeSlot ?? 'bg';
+						const next = applyHexToSlot(active, hex);
+						writePickerState(picker, next);
+					});
+				});
 
 				picker.querySelectorAll("[data-preset]").forEach((button) => {
 					button.addEventListener("click", () => {
@@ -461,14 +613,26 @@ const searchActive =
 							if (!raw) return;
 							const payload = JSON.parse(raw);
 							const previewed = window.__palette?.preview(payload) ?? payload;
-							writePaletteControls(picker, previewed);
+							writePickerState(picker, previewed);
 						} catch {}
 					});
 				});
 
 				picker.querySelector("[data-role='shuffle']")?.addEventListener("click", () => {
 					const previewed = window.__palette?.preview(randomPalette()) ?? randomPalette();
-					writePaletteControls(picker, previewed);
+					writePickerState(picker, previewed);
+				});
+
+				const applyButton = picker.querySelector("[data-role='apply']");
+				applyButton?.addEventListener("click", () => {
+					window.__palette?.preview(window.__palette.current());
+					panel?.classList.add("hidden");
+					toggle?.setAttribute("aria-expanded", "false");
+				});
+
+				picker.querySelector("[data-role='cancel']")?.addEventListener("click", () => {
+					panel?.classList.add("hidden");
+					toggle?.setAttribute("aria-expanded", "false");
 				});
 
 				picker.querySelector("[data-role='save']")?.addEventListener("click", () => {
@@ -491,14 +655,14 @@ const searchActive =
 							const style = button.getAttribute("data-bg-style");
 							if (!style) return;
 							const previewed = window.__palette?.preview({ bgStyle: style }) ?? { bgStyle: style };
-							writePaletteControls(picker, previewed);
+							writePickerState(picker, previewed);
 						} catch {}
 					});
 				});
 
 				picker.querySelector("[data-role='reset']")?.addEventListener("click", () => {
 					const reset = window.__palette?.reset() ?? DEFAULTS;
-					writePaletteControls(picker, reset);
+					writePickerState(picker, reset);
 				});
 			});
 

@@ -1,13 +1,28 @@
 ---
-import { PALETTE_DEFAULTS, PALETTE_CONTROLS, PALETTE_PRESETS } from '../data/palette-defaults';
-const presets = PALETTE_PRESETS;
-const controls = PALETTE_CONTROLS;
+import { PALETTE_DEFAULTS } from '../data/palette-defaults';
+const presets = [
+	{ name: 'Mint', bgHue: 156, bgSat: 50, lightBg: 96, darkBg: 8, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8, bgStyle: 'off' },
+	{ name: 'Sand', bgHue: 36, bgSat: 32, lightBg: 94, darkBg: 9, accentHue: 28, accentSat: 62, inkHue: 36, inkSat: 9, bgStyle: 'off' },
+	{ name: 'Ember', bgHue: 15, bgSat: 26, lightBg: 93, darkBg: 10, accentHue: 12, accentSat: 78, inkHue: 15, inkSat: 9, bgStyle: 'off' },
+	{ name: 'Lavender', bgHue: 268, bgSat: 22, lightBg: 95, darkBg: 10, accentHue: 265, accentSat: 58, inkHue: 268, inkSat: 9, bgStyle: 'off' },
+	{ name: 'Ocean', bgHue: 200, bgSat: 40, lightBg: 96, darkBg: 7, accentHue: 198, accentSat: 74, inkHue: 200, inkSat: 8, bgStyle: 'off' },
+	{ name: 'Bloom', bgHue: 340, bgSat: 22, lightBg: 95, darkBg: 8, accentHue: 340, accentSat: 64, inkHue: 340, inkSat: 8, bgStyle: 'off' },
+	{ name: 'Slate', bgHue: 220, bgSat: 16, lightBg: 96, darkBg: 8, accentHue: 220, accentSat: 56, inkHue: 220, inkSat: 8, bgStyle: 'off' },
+	{ name: 'Graphite', bgHue: 240, bgSat: 8, lightBg: 96, darkBg: 7, accentHue: 240, accentSat: 38, inkHue: 240, inkSat: 6, bgStyle: 'off' },
+];
+const basic = [
+	'#F4A9B8', '#EF4444', '#8D6E63', '#7C3F32', '#4A0E0E', '#99F6E4', '#7DF9FF', '#3B82F6', '#0500FF', '#1E3791', '#1C3F94', '#0B1D60',
+	'#FFFFB3', '#FFFF00', '#FFB347', '#FF7F50', '#A0522D', '#BDB76B', '#8A9CFF', '#7C3AED', '#5B9F9A', '#0B2A4A', '#6B21A8', '#4C1D95',
+	'#98FF98', '#7CFC00', '#2EE66B', '#50E3A8', '#8AFFEF', '#A59D8F', '#FF9FF3', '#D58BDD', '#C400FF', '#E84393', '#6B7B8D', '#8B3757',
+	'#228B22', '#556B2F', '#2F8B8B', '#008080', '#1E5631', '#234836', '#6A0DAD', '#4B0082', '#000000', '#808080', '#C2C2C2', '#FFFFFF',
+];
 const defaultPalette = PALETTE_DEFAULTS;
 ---
+
 <div class="relative bg-picker">
 	<button
 		type="button"
-		class="bg-picker-toggle w-6 h-6 rounded flex items-center justify-center hover:bg-bg-3 transition-colors"
+		class="bg-picker-toggle w-6 h-6 rounded-full flex items-center justify-center hover:bg-bg-3 transition-colors"
 		aria-label="Choose appearance colors"
 		title="Appearance"
 		aria-expanded="false">
@@ -28,17 +43,18 @@ const defaultPalette = PALETTE_DEFAULTS;
 	</button>
 
 	<div
-		class="bg-picker-panel hidden fixed top-12 sm:top-14 right-3 z-[60] w-72 max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-4rem)] overflow-y-auto rounded-xl border border-border bg-surface p-3 shadow-2xl"
+		class="bg-picker-panel hidden fixed top-12 sm:top-14 right-3 z-[60] w-[330px] max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-4rem)] overflow-y-auto rounded-2xl border border-border bg-surface p-4 shadow-2xl"
 		role="dialog"
 		aria-modal="false"
 		aria-label="Appearance colors"
 		data-default-palette={JSON.stringify(defaultPalette)}>
+
 		<div class="flex items-center justify-between gap-3 mb-2">
 			<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-text-3">Appearance</p>
 			<button
 				type="button"
 				data-role="shuffle"
-				class="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-[10px] font-medium text-text-2 hover:border-accent hover:text-accent transition-colors"
+				class="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-[10px] font-medium text-text-2 hover:border-accent hover:text-accent transition-colors"
 				aria-label="Shuffle colors">
 				<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
 					<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/>
@@ -47,18 +63,18 @@ const defaultPalette = PALETTE_DEFAULTS;
 			</button>
 		</div>
 
-		<div class="flex items-center gap-1 rounded-lg border border-border bg-bg-2 p-1 mb-3" role="group" aria-label="Background style">
+		<div class="flex items-center gap-1 rounded-full border border-border bg-bg-2 p-1 mb-3" role="group" aria-label="Background style">
 			<button
 				type="button"
 				data-bg-style="off"
-				class="flex-1 rounded-md px-2 py-1 text-[10px] font-medium text-text-2 transition-colors"
+				class="flex-1 rounded-full px-2 py-1 text-[10px] font-medium text-text-2 transition-colors"
 				aria-pressed="true">
 				Off
 			</button>
 			<button
 				type="button"
 				data-bg-style="procedural"
-				class="flex-1 rounded-md px-2 py-1 text-[10px] font-medium text-text-2 transition-colors"
+				class="flex-1 rounded-full px-2 py-1 text-[10px] font-medium text-text-2 transition-colors"
 				aria-pressed="false">
 				Procedural
 			</button>
@@ -68,7 +84,7 @@ const defaultPalette = PALETTE_DEFAULTS;
 			{presets.map((preset) => (
 				<button
 					type="button"
-					class="h-9 rounded-lg border border-border hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
+					class="h-9 rounded-xl border border-border hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
 					data-preset={JSON.stringify(preset)}
 					aria-label={`${preset.name} palette`}
 					title={preset.name}
@@ -78,40 +94,84 @@ const defaultPalette = PALETTE_DEFAULTS;
 			))}
 		</div>
 
-		<fieldset class="space-y-2.5">
-			<legend class="sr-only">Fine-tune colors</legend>
-			{controls.map((control) => (
-				<label class={`block ${control.role === 'light-bg' ? 'bg-mode-light' : control.role === 'dark-bg' ? 'bg-mode-dark' : ''}`}>
-					<span class="flex items-center justify-between gap-2 text-[11px] font-medium text-text-2">
-						<span>{control.label}</span>
-						<output data-role={`${control.role}-value`} class="font-mono text-[10px] text-text-3">{control.output}</output>
-					</span>
+		<!-- Paint-style editor -->
+		<div class="rounded-2xl border border-border bg-bg-2 p-3">
+			<div class="flex items-center gap-2 mb-3">
+				<div class="grid grid-cols-3 gap-1.5" role="tablist" aria-label="Color slot">
+					<button type="button" data-slot-tab="bg" class="h-8 rounded-lg border border-accent bg-accent text-[10px] font-semibold text-white transition-colors" role="tab" aria-selected="true">Background</button>
+					<button type="button" data-slot-tab="accent" class="h-8 rounded-lg border border-border text-[10px] font-medium text-text-2 transition-colors" role="tab" aria-selected="false">Accent</button>
+					<button type="button" data-slot-tab="ink" class="h-8 rounded-lg border border-border text-[10px] font-medium text-text-2 transition-colors" role="tab" aria-selected="false">Font</button>
+				</div>
+				<div class="flex-1 min-w-0">
 					<input
-						type="range"
-						min={control.min}
-						max={control.max}
-						step="1"
-						value={control.value}
-						data-key={control.key}
-						data-role={control.role}
-						data-suffix={control.suffix}
-						class="mt-1 w-full accent-accent cursor-pointer"
+						type="text"
+						data-hex-input
+						value="#ECFDF5"
+						spellcheck="false"
+						autocomplete="off"
+						class="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 font-mono text-[11px] uppercase text-text focus:outline-none focus:ring-2 focus:ring-accent"
+						aria-label="Hex color"
 					/>
-				</label>
-			))}
-		</fieldset>
+				</div>
+			</div>
 
-		<div class="mt-3 flex items-center justify-end gap-2 border-t border-border pt-2">
+			<div class="flex gap-2">
+				<div
+					class="relative h-40 min-w-[130px] flex-[1.7] rounded-xl overflow-hidden cursor-crosshair touch-none border border-border"
+					data-sv-square
+					style="background: linear-gradient(to right, #ffffff, #ff0000 16.6%, #ffff00 33.3%, #00ff00 50%, #00ffff 66.6%, #0000ff 83.3%, #ff00ff 100%);">
+					<div class="absolute inset-0 pointer-events-none" data-hue-layer="1" style="background: linear-gradient(to right, transparent, hsl(0,100%,50%)); mix-blend-mode: overlay;"></div>
+					<div class="absolute inset-0 pointer-events-none" data-hue-layer="2" style="background: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(0,0,0,0));"></div>
+					<div class="absolute inset-0 pointer-events-none" data-hue-layer="3" style="background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.9));"></div>
+					<div
+						data-sv-thumb
+						class="absolute h-4 w-4 rounded-full border-2 border-white shadow-md -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+						style="left: 50%; top: 50%; background: #f00;">
+					</div>
+				</div>
+				<div class="hidden">
+					<input type="range" data-hue-range min="0" max="360" value="0" aria-label="Hue" />
+				</div>
+
+				<div class="flex flex-col gap-1.5 w-[72px]">
+					<div class="h-[86px] rounded-xl border border-border" data-current-swatch style="background: #ECFDF5"></div>
+					<div class="h-[86px] rounded-xl border border-border" data-new-swatch style="background: #ECFDF5"></div>
+				</div>
+			</div>
+			<input type="range" data-hue-range min="0" max="360" value="0" class="mt-2 w-full cursor-pointer" style="accent-color: #000; background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00); border-radius: 9999px; height: 12px;" aria-label="Hue" />
+
+			<div class="mt-3">
+				<div class="flex items-center justify-between mb-1.5">
+					<p class="text-[10px] font-medium text-text-2">Basic colours</p>
+					<p class="text-[10px] text-text-3">Custom</p>
+				</div>
+				<div class="grid grid-cols-12 gap-1.5">
+					{basic.map((hex) => (
+						<button type="button" data-basic={hex} class="h-6 w-6 rounded-full border border-border hover:scale-105 transition-transform" style={`background: ${hex}`} aria-label={hex} title={hex}></button>
+					))}
+					{Array.from({ length: 12 }).map(() => (
+						<button type="button" data-custom-empty class="h-6 w-6 rounded-full border border-dashed border-border hover:border-accent transition-colors" aria-hidden="true" tabindex="-1"></button>
+					))}
+				</div>
+			</div>
+
+			<div class="mt-3 flex items-center gap-2">
+				<button type="button" data-role="apply" class="flex-1 rounded-xl bg-accent px-3 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-accent-text">OK</button>
+				<button type="button" data-role="cancel" class="flex-1 rounded-xl border border-border px-3 py-1.5 text-[11px] font-medium text-text-2 transition-colors hover:text-text">Cancel</button>
+			</div>
+		</div>
+
+		<div class="mt-3 flex items-center justify-between gap-2 border-t border-border pt-2">
 			<button
 				type="button"
 				data-role="reset"
-				class="inline-flex items-center justify-center rounded-md border border-border px-2 py-1 text-[11px] font-medium text-text-2 hover:border-accent hover:text-accent transition-colors">
+				class="inline-flex items-center justify-center rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-text-2 hover:border-accent hover:text-accent transition-colors">
 				Reset
 			</button>
 			<button
 				type="button"
 				data-role="save"
-				class="inline-flex items-center justify-center rounded-md bg-accent px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-accent-text">
+				class="inline-flex items-center justify-center rounded-full bg-accent px-3 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-accent-text">
 				Save
 			</button>
 		</div>
