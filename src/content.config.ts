@@ -70,14 +70,12 @@ const timeline = defineCollection({
 });
 
 // Content that used to be written inside page files. Editable from the CMS like everything else.
-const status = z.enum(['draft', 'published', 'archived']).optional().default('published');
-
 // Home page intro. The home page shows the entry named "intro".
 const home = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/home" }),
   schema: z.object({
     title: z.string(),
-    status,
+    status: z.enum(['draft', 'published', 'archived']).optional().default('published'),
   }),
 });
 
@@ -88,7 +86,7 @@ const skills = defineCollection({
     title: z.string(),
     order: z.number().optional().default(100),
     items: z.array(z.string()).min(1),
-    status,
+    status: z.enum(['draft', 'published', 'archived']).optional().default('published'),
   }),
 });
 
@@ -101,7 +99,7 @@ const socials = defineCollection({
     description: z.string(),
     icon: z.enum(['github', 'linkedin', 'email', 'globe']).optional().default('globe'),
     order: z.number().optional().default(100),
-    status,
+    status: z.enum(['draft', 'published', 'archived']).optional().default('published'),
   }),
 });
 
