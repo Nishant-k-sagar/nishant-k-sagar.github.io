@@ -1,5 +1,5 @@
 ---
-title: "Zz renamed title after first save"
+title: "Zz renamed title after first save final"
 date: "2026-11-06"
 tags: ["react", "vite", "cloud"]
 status: "published"
