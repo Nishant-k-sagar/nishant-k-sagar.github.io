@@ -68,10 +68,10 @@ const imageUrl = new URL(image, Astro.site).href;
         document.documentElement.classList.remove('dark')
       }
     </script>
-    <script is:inline>
+        <script is:inline>
       (function () {
         var STORAGE_KEY = 'ns:palette'
-        var DEFAULTS = { bgHue: 156, bgSat: 52, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8 }
+        var DEFAULTS = { bgHue: 156, bgSat: 50, lightBg: 96, darkBg: 8, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8 }
 
         function finite(value, fallback) { var n = Number(value); return Number.isFinite(n) ? n : fallback }
         function clamp(value, min, max) { return Math.min(max, Math.max(min, value)) }
@@ -82,6 +82,8 @@ const imageUrl = new URL(image, Astro.site).href;
           return {
             bgHue: wrapHue(p.bgHue, DEFAULTS.bgHue),
             bgSat: part(p, 'bgSat', DEFAULTS.bgSat, 0, 70),
+            lightBg: part(p, 'lightBg', DEFAULTS.lightBg, 68, 97),
+            darkBg: part(p, 'darkBg', DEFAULTS.darkBg, 4, 22),
             accentHue: wrapHue(p.accentHue, DEFAULTS.accentHue),
             accentSat: part(p, 'accentSat', DEFAULTS.accentSat, 20, 85),
             inkHue: wrapHue(p.inkHue, DEFAULTS.inkHue),
@@ -90,46 +92,46 @@ const imageUrl = new URL(image, Astro.site).href;
         }
         function hsl(h, s, l) { return 'hsl(' + Math.round(h * 10) / 10 + ', ' + Math.round(s) + '%, ' + l + '%)' }
         function build(p) {
-          var bgHue = p.bgHue
-          var bgSat = p.bgSat
-          var accentHue = p.accentHue
+          var h = p.bgHue
+          var s = p.bgSat
+          var light = p.lightBg
+          var dark = p.darkBg
+          var a = p.accentHue
           var accentSat = p.accentSat
-          var inkHue = p.inkHue
+          var ink = p.inkHue
           var inkSat = p.inkSat
-          var bg2Sat = clamp(bgSat - 15, 0, 70)
-          var bg3Sat = clamp(bgSat - 20, 0, 70)
-          var surfaceSat = clamp(bgSat * 0.25, 0, 18)
-          var borderSat = clamp(bgSat * 0.15, 4, 14)
-          var darkBgSat = clamp(bgSat * 0.35, 6, 30)
-          var darkBorderSat = clamp(bgSat * 0.28, 8, 30)
+          var bg2Sat = clamp(s - 15, 0, 70)
+          var bg3Sat = clamp(s - 20, 0, 70)
+          var surfaceSat = clamp(s * 0.45, 0, 38)
+          var borderSat = clamp(s * 0.45, 5, 35)
           return [
             ':root[data-palette="custom"] {',
-            '--color-bg: ' + hsl(bgHue, bgSat, 96) + ';',
-            '--color-bg-2: ' + hsl(bgHue, bg2Sat, 92) + ';',
-            '--color-bg-3: ' + hsl(bgHue, bg3Sat, 88) + ';',
-            '--color-surface: ' + hsl(bgHue, surfaceSat, 99) + ';',
-            '--color-border: ' + hsl(bgHue, borderSat, 82) + ';',
-            '--color-border-2: ' + hsl(bgHue, borderSat, 66) + ';',
-            '--color-text: ' + hsl(inkHue, inkSat, 10) + ';',
-            '--color-text-2: ' + hsl(inkHue, inkSat, 33) + ';',
-            '--color-text-3: ' + hsl(inkHue, inkSat, 64) + ';',
-            '--color-accent: ' + hsl(accentHue, accentSat, 30) + ';',
-            '--color-accent-text: ' + hsl(accentHue, accentSat, 26) + ';',
-            '--color-accent-bg: ' + hsl(accentHue, clamp(accentSat * 0.35, 10, 40), 94) + ';',
+            '--color-bg: ' + hsl(h, s, light) + ';',
+            '--color-bg-2: ' + hsl(h, bg2Sat, clamp(light - 6, 60, 93)) + ';',
+            '--color-bg-3: ' + hsl(h, bg3Sat, clamp(light - 12, 52, 88)) + ';',
+            '--color-surface: ' + hsl(h, surfaceSat, clamp(light + 3, 78, 99)) + ';',
+            '--color-border: ' + hsl(h, borderSat, clamp(light - 14, 45, 82)) + ';',
+            '--color-border-2: ' + hsl(h, borderSat, clamp(light - 34, 25, 66)) + ';',
+            '--color-text: ' + hsl(ink, inkSat, 10) + ';',
+            '--color-text-2: ' + hsl(ink, inkSat, 33) + ';',
+            '--color-text-3: ' + hsl(ink, inkSat, 64) + ';',
+            '--color-accent: ' + hsl(a, accentSat, 30) + ';',
+            '--color-accent-text: ' + hsl(a, accentSat, 26) + ';',
+            '--color-accent-bg: ' + hsl(a, clamp(accentSat * 0.35, 10, 40), 94) + ';',
             '}',
             '.dark[data-palette="custom"] {',
-            '--color-bg: ' + hsl(bgHue, darkBgSat, 8) + ';',
-            '--color-bg-2: ' + hsl(bgHue, darkBgSat, 11) + ';',
-            '--color-bg-3: ' + hsl(bgHue, darkBgSat, 15) + ';',
-            '--color-surface: ' + hsl(bgHue, darkBgSat, 11) + ';',
-            '--color-border: ' + hsl(bgHue, darkBorderSat, 17) + ';',
-            '--color-border-2: ' + hsl(bgHue, darkBorderSat, 26) + ';',
-            '--color-text: ' + hsl(inkHue, inkSat, 97) + ';',
-            '--color-text-2: ' + hsl(inkHue, inkSat, 74) + ';',
-            '--color-text-3: ' + hsl(inkHue, inkSat, 57) + ';',
-            '--color-accent: ' + hsl(accentHue, accentSat, 72) + ';',
-            '--color-accent-text: ' + hsl(accentHue, accentSat, 60) + ';',
-            '--color-accent-bg: ' + hsl(accentHue, clamp(accentSat * 0.6, 25, 60), 14) + ';',
+            '--color-bg: ' + hsl(h, s, dark) + ';',
+            '--color-bg-2: ' + hsl(h, s, clamp(dark + 4, 9, 28)) + ';',
+            '--color-bg-3: ' + hsl(h, s, clamp(dark + 8, 13, 32)) + ';',
+            '--color-surface: ' + hsl(h, surfaceSat, clamp(dark + 4, 9, 28)) + ';',
+            '--color-border: ' + hsl(h, borderSat, clamp(dark + 10, 14, 38)) + ';',
+            '--color-border-2: ' + hsl(h, borderSat, clamp(dark + 20, 22, 48)) + ';',
+            '--color-text: ' + hsl(ink, inkSat, 97) + ';',
+            '--color-text-2: ' + hsl(ink, inkSat, 74) + ';',
+            '--color-text-3: ' + hsl(ink, inkSat, 57) + ';',
+            '--color-accent: ' + hsl(a, accentSat, 72) + ';',
+            '--color-accent-text: ' + hsl(a, accentSat, 60) + ';',
+            '--color-accent-bg: ' + hsl(a, clamp(accentSat * 0.6, 25, 60), 14) + ';',
             '}'
           ].join('\n')
         }
@@ -142,12 +144,9 @@ const imageUrl = new URL(image, Astro.site).href;
           } catch (e) {}
           return null
         }
-        var current = load() || DEFAULTS
-        function save(p) {
-          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)) } catch (e) {}
-        }
-        function apply(p, options) {
-          current = normalize(Object.assign({}, current, p || {}))
+        var saved = load()
+        var current = saved || Object.assign({}, DEFAULTS)
+        function render() {
           var style = document.getElementById('bg-palette-style')
           if (!style) {
             style = document.createElement('style')
@@ -156,8 +155,19 @@ const imageUrl = new URL(image, Astro.site).href;
           }
           style.textContent = build(current)
           document.documentElement.dataset.palette = 'custom'
-          if (!options || options.save !== false) save(current)
+        }
+        function preview(p) {
+          current = normalize(Object.assign({}, current, p || {}))
+          render()
           return Object.assign({}, current)
+        }
+        function save() {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(current))
+            return true
+          } catch (e) {
+            return false
+          }
         }
         function reset() {
           current = Object.assign({}, DEFAULTS)
@@ -170,14 +180,17 @@ const imageUrl = new URL(image, Astro.site).href;
         window.__palette = {
           DEFAULTS: Object.assign({}, DEFAULTS),
           current: function () { return Object.assign({}, current) },
-          apply: apply,
+          preview: preview,
+          save: save,
           reset: reset,
+          isSaved: function () {
+            try { return !!localStorage.getItem(STORAGE_KEY) } catch (e) { return false }
+          },
         }
-        try {
-          if (localStorage.getItem(STORAGE_KEY)) apply(current, { save: false })
-        } catch (e) {}
+        if (saved) render()
       })();
     </script>
+  </head>
   </head>
   <body class="bg-bg text-text font-sans min-h-screen flex flex-col">
     <slot />

@@ -266,6 +266,19 @@ const searchActive =
 			localStorage.setItem("theme", isDark ? "dark" : "light");
 		}
 
+		function syncPaletteMode(picker) {
+			const isDark = html.classList.contains("dark");
+			const lightRow = picker.querySelector(".bg-mode-light");
+			const darkRow = picker.querySelector(".bg-mode-dark");
+			if (lightRow) lightRow.style.display = isDark ? "none" : "";
+			if (darkRow) darkRow.style.display = isDark ? "" : "none";
+		}
+
+		function handleThemeToggle() {
+			toggleTheme();
+			document.querySelectorAll(".bg-picker").forEach(syncPaletteMode);
+		}
+
 		document.addEventListener("DOMContentLoaded", () => {
 			const themeToggle = document.getElementById("theme-toggle");
 			const mobileThemeToggle = document.getElementById(
@@ -275,8 +288,8 @@ const searchActive =
 				document.getElementById("mobile-menu-toggle");
 			const mobileMenu = document.getElementById("mobile-menu");
 
-			themeToggle?.addEventListener("click", toggleTheme);
-			mobileThemeToggle?.addEventListener("click", toggleTheme);
+			themeToggle?.addEventListener("click", handleThemeToggle);
+			mobileThemeToggle?.addEventListener("click", handleThemeToggle);
 
 			const hamburgerIcon = document.getElementById("hamburger-icon");
 			const closeIcon = document.getElementById("close-icon");
@@ -333,25 +346,27 @@ const searchActive =
 
 			// Appearance palette (stored locally in the browser, no server round-trip)
 			const pickers = document.querySelectorAll(".bg-picker");
-			const DEFAULTS = window.__palette?.DEFAULTS ?? { bgHue: 156, bgSat: 52, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8 };
-			const COLOR_CONTROLS = [
-				{ key: "bgHue", role: "bg-hue", suffix: "°" },
-				{ key: "bgSat", role: "bg-sat", suffix: "%" },
-				{ key: "accentHue", role: "accent-hue", suffix: "°" },
-				{ key: "accentSat", role: "accent-sat", suffix: "%" },
-				{ key: "inkHue", role: "ink-hue", suffix: "°" },
-				{ key: "inkSat", role: "ink-sat", suffix: "%" },
-			];
+			const firstPanel = document.querySelector(".bg-picker-panel");
+			const DEFAULTS = window.__paletteDefaults ?? {};
+			const COLOR_CONTROLS = [...firstPanel.querySelectorAll("input[type=range]")].map((input) => ({
+				key: input.dataset.key,
+				role: input.dataset.role,
+				suffix: input.dataset.suffix ?? "",
+			}));
 
 			function randomPalette() {
 				const backgroundHue = Math.floor(Math.random() * 361);
+				const panel = document.querySelector(".bg-picker-panel");
+				const byRole = (role) => panel.querySelector(`[data-role='${role}']`);
 				return {
 					bgHue: backgroundHue,
-					bgSat: Math.floor(20 + Math.random() * 38),
+					bgSat: Math.floor(Number(byRole("bg-sat")?.min ?? 0) + Math.random() * (Number(byRole("bg-sat")?.max ?? 70) - Number(byRole("bg-sat")?.min ?? 0))),
+					lightBg: Math.floor(Number(byRole("light-bg")?.min ?? 68) + Math.random() * (Number(byRole("light-bg")?.max ?? 97) - Number(byRole("light-bg")?.min ?? 68))),
+					darkBg: Math.floor(Number(byRole("dark-bg")?.min ?? 4) + Math.random() * (Number(byRole("dark-bg")?.max ?? 22) - Number(byRole("dark-bg")?.min ?? 4))),
 					accentHue: Math.floor(Math.random() * 361),
-					accentSat: Math.floor(45 + Math.random() * 32),
+					accentSat: Math.floor(Number(byRole("accent-sat")?.min ?? 20) + Math.random() * (Number(byRole("accent-sat")?.max ?? 85) - Number(byRole("accent-sat")?.min ?? 20))),
 					inkHue: backgroundHue,
-					inkSat: Math.floor(6 + Math.random() * 9),
+					inkSat: Math.floor(Number(byRole("ink-sat")?.min ?? 0) + Math.random() * (Number(byRole("ink-sat")?.max ?? 18) - Number(byRole("ink-sat")?.min ?? 0))),
 				};
 			}
 
@@ -386,16 +401,14 @@ const searchActive =
 				return palette;
 			}
 
-			function applyPaletteFromPicker(picker) {
-				const palette = readPaletteControls(picker);
-				const applied = window.__palette?.apply(palette) ?? palette;
-				writePaletteControls(picker, applied);
+			function previewFromPicker(picker) {
+				const previewed = window.__palette?.preview(readPaletteControls(picker)) ?? readPaletteControls(picker);
+				writePaletteControls(picker, previewed);
 			}
 
 			pickers.forEach((picker) => {
 				const toggle = picker.querySelector(".bg-picker-toggle");
 				const panel = picker.querySelector(".bg-picker-panel");
-				const shuffle = picker.querySelector("[data-role='shuffle']");
 
 				try {
 					writePaletteControls(picker, window.__palette?.current());
@@ -406,6 +419,7 @@ const searchActive =
 				toggle?.addEventListener("click", () => {
 					if (!panel) return;
 					const willOpen = panel.classList.contains("hidden");
+					if (willOpen) syncPaletteMode(picker);
 					closePalettePanels(picker);
 					panel.classList.toggle("hidden", !willOpen);
 					toggle.setAttribute("aria-expanded", String(willOpen));
@@ -426,7 +440,7 @@ const searchActive =
 				});
 
 				for (const control of COLOR_CONTROLS) {
-					picker.querySelector(`[data-role='${control.role}']`)?.addEventListener("input", () => applyPaletteFromPicker(picker));
+					picker.querySelector(`[data-role='${control.role}']`)?.addEventListener("input", () => previewFromPicker(picker));
 				}
 
 				picker.querySelectorAll("[data-preset]").forEach((button) => {
@@ -435,20 +449,24 @@ const searchActive =
 							const raw = button.getAttribute("data-preset");
 							if (!raw) return;
 							const payload = JSON.parse(raw);
-							const applied = window.__palette?.apply(payload) ?? payload;
-							writePaletteControls(picker, applied);
+							const previewed = window.__palette?.preview(payload) ?? payload;
+							writePaletteControls(picker, previewed);
 						} catch {}
 					});
 				});
 
-				shuffle?.addEventListener("click", () => {
-					const applied = window.__palette?.apply(randomPalette()) ?? randomPalette();
-					writePaletteControls(picker, applied);
+				picker.querySelector("[data-role='shuffle']")?.addEventListener("click", () => {
+					const previewed = window.__palette?.preview(randomPalette()) ?? randomPalette();
+					writePaletteControls(picker, previewed);
+				});
+
+				picker.querySelector("[data-role='save']")?.addEventListener("click", () => {
+					window.__palette?.save();
 				});
 
 				picker.querySelector("[data-role='reset']")?.addEventListener("click", () => {
-					const applied = window.__palette?.reset() ?? DEFAULTS;
-					writePaletteControls(picker, applied);
+					const reset = window.__palette?.reset() ?? DEFAULTS;
+					writePaletteControls(picker, reset);
 				});
 			});
 
