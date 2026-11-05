@@ -1,21 +1,21 @@
 ---
 const presets = [
-	{ name: 'Mint', hue: 156, sat: 55 },
-	{ name: 'Paper', hue: 36, sat: 10 },
-	{ name: 'Slate', hue: 215, sat: 18 },
-	{ name: 'Sage', hue: 112, sat: 22 },
-	{ name: 'Sand', hue: 32, sat: 36 },
-	{ name: 'Bloom', hue: 340, sat: 18 },
-	{ name: 'Sky', hue: 205, sat: 30 },
-	{ name: 'Graphite', hue: 240, sat: 10 },
+	{ name: 'Mint', bgHue: 156, bgSat: 52, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8 },
+	{ name: 'Ocean', bgHue: 195, bgSat: 42, accentHue: 195, accentSat: 72, inkHue: 195, inkSat: 8 },
+	{ name: 'Ember', bgHue: 18, bgSat: 30, accentHue: 14, accentSat: 78, inkHue: 18, inkSat: 9 },
+	{ name: 'Lavender', bgHue: 265, bgSat: 24, accentHue: 265, accentSat: 58, inkHue: 265, inkSat: 9 },
+	{ name: 'Sand', bgHue: 33, bgSat: 38, accentHue: 28, accentSat: 65, inkHue: 33, inkSat: 10 },
+	{ name: 'Slate', bgHue: 220, bgSat: 20, accentHue: 220, accentSat: 56, inkHue: 220, inkSat: 8 },
+	{ name: 'Bloom', bgHue: 340, bgSat: 22, accentHue: 340, accentSat: 62, inkHue: 340, inkSat: 8 },
+	{ name: 'Graphite', bgHue: 240, bgSat: 10, accentHue: 240, accentSat: 38, inkHue: 240, inkSat: 6 },
 ];
 ---
 <div class="relative bg-picker">
 	<button
 		type="button"
 		class="bg-picker-toggle w-6 h-6 rounded flex items-center justify-center hover:bg-bg-3 transition-colors"
-		aria-label="Choose background color"
-		title="Background color"
+		aria-label="Choose appearance colors"
+		title="Appearance"
 		aria-expanded="false">
 		<svg
 			class="w-4 h-4 text-text"
@@ -34,64 +34,99 @@ const presets = [
 	</button>
 
 	<div
-		class="bg-picker-panel hidden absolute right-0 top-full mt-2 z-50 w-72 max-w-[calc(100vw-1.5rem)] rounded-xl border border-border bg-surface p-3 shadow-2xl"
+		class="bg-picker-panel hidden absolute right-0 top-full mt-2 z-50 w-80 max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-3rem)] overflow-y-auto rounded-2xl border border-border bg-surface p-3 shadow-2xl"
 		role="dialog"
 		aria-modal="false"
-		aria-label="Background color settings">
-		<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-text-3 mb-2">Background</p>
+		aria-label="Appearance colors">
+		<div class="flex items-start justify-between gap-3 mb-2">
+			<div>
+				<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-text-3">Appearance</p>
+				<p class="text-[10px] leading-tight text-text-3 mt-1">Saved on this browser only.</p>
+			</div>
+			<button
+				type="button"
+				data-role="shuffle"
+				class="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-[10px] font-medium text-text-2 hover:border-accent hover:text-accent transition-colors"
+				aria-label="Shuffle colors">
+				<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/>
+				</svg>
+				Shuffle
+			</button>
+		</div>
 
 		<div class="grid grid-cols-4 gap-2 mb-3" role="group" aria-label="Preset palettes">
 			{presets.map((preset) => (
 				<button
 					type="button"
-					class="h-10 rounded-lg border border-border hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
-					data-preset-hue={preset.hue}
-					data-preset-sat={preset.sat}
-					aria-label={`${preset.name} background`}
+					class="h-11 rounded-xl border border-border hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
+					data-preset={JSON.stringify(preset)}
+					aria-label={`${preset.name} palette`}
 					title={preset.name}
-					style={`background: linear-gradient(135deg, hsl(${preset.hue}, ${preset.sat}%, 96%) 0 50%, hsl(${preset.hue}, ${Math.max(8, Math.round(preset.sat * 0.35))}%, 8%) 50% 100%);`}>
+					style={`background: linear-gradient(135deg, hsl(${preset.bgHue}, ${preset.bgSat}%, 96%) 0 34%, hsl(${preset.accentHue}, ${preset.accentSat}%, 55%) 34% 66%, hsl(${preset.bgHue}, ${Math.max(6, Math.round(preset.bgSat * 0.35))}%, 8%) 66% 100%);`}>
 					<span class="sr-only">{preset.name}</span>
 				</button>
 			))}
 		</div>
 
-		<div class="space-y-3">
+		<fieldset class="space-y-3">
+			<legend class="sr-only">Fine-tune colors</legend>
+
 			<label class="block">
 				<span class="flex items-center justify-between gap-2 text-[11px] font-medium text-text-2">
-					<span>Hue</span>
-					<output data-role="hue-value" class="font-mono text-[10px] text-text-3">156°</output>
+					<span>Background hue</span>
+					<output data-role="bg-hue-value" class="font-mono text-[10px] text-text-3">156°</output>
 				</span>
-				<input
-					type="range"
-					min="0"
-					max="360"
-					step="1"
-					value="156"
-					data-role="hue"
-					class="mt-1.5 w-full accent-accent cursor-pointer"
-					aria-valuetext="156 degrees"
-				/>
+				<input type="range" min="0" max="360" step="1" value="156" data-role="bg-hue" class="mt-1.5 w-full accent-accent cursor-pointer"/>
 			</label>
 
 			<label class="block">
 				<span class="flex items-center justify-between gap-2 text-[11px] font-medium text-text-2">
-					<span>Saturation</span>
-					<output data-role="sat-value" class="font-mono text-[10px] text-text-3">55%</output>
+					<span>Background saturation</span>
+					<output data-role="bg-sat-value" class="font-mono text-[10px] text-text-3">52%</output>
 				</span>
-				<input
-					type="range"
-					min="0"
-					max="70"
-					step="1"
-					value="55"
-					data-role="sat"
-					class="mt-1.5 w-full accent-accent cursor-pointer"
-				/>
+				<input type="range" min="0" max="70" step="1" value="52" data-role="bg-sat" class="mt-1.5 w-full accent-accent cursor-pointer"/>
 			</label>
-		</div>
+
+			<label class="block">
+				<span class="flex items-center justify-between gap-2 text-[11px] font-medium text-text-2">
+					<span>Accent hue</span>
+					<output data-role="accent-hue-value" class="font-mono text-[10px] text-text-3">156°</output>
+				</span>
+				<input type="range" min="0" max="360" step="1" value="156" data-role="accent-hue" class="mt-1.5 w-full accent-accent cursor-pointer"/>
+			</label>
+
+			<label class="block">
+				<span class="flex items-center justify-between gap-2 text-[11px] font-medium text-text-2">
+					<span>Accent saturation</span>
+					<output data-role="accent-sat-value" class="font-mono text-[10px] text-text-3">65%</output>
+				</span>
+				<input type="range" min="20" max="85" step="1" value="65" data-role="accent-sat" class="mt-1.5 w-full accent-accent cursor-pointer"/>
+			</label>
+
+			<div class="border-t border-border pt-3">
+				<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-text-3 mb-2">Font color</p>
+
+				<label class="block">
+					<span class="flex items-center justify-between gap-2 text-[11px] font-medium text-text-2">
+						<span>Ink hue</span>
+						<output data-role="ink-hue-value" class="font-mono text-[10px] text-text-3">156°</output>
+					</span>
+					<input type="range" min="0" max="360" step="1" value="156" data-role="ink-hue" class="mt-1.5 w-full accent-accent cursor-pointer"/>
+				</label>
+
+				<label class="block mt-3">
+					<span class="flex items-center justify-between gap-2 text-[11px] font-medium text-text-2">
+						<span>Ink tint</span>
+						<output data-role="ink-sat-value" class="font-mono text-[10px] text-text-3">8%</output>
+					</span>
+					<input type="range" min="0" max="18" step="1" value="8" data-role="ink-sat" class="mt-1.5 w-full accent-accent cursor-pointer"/>
+				</label>
+			</div>
+		</fieldset>
 
 		<div class="mt-3 flex items-center justify-between gap-2 border-t border-border pt-2">
-			<span class="text-[10px] leading-tight text-text-3">Applies to light<br/>and dark mode.</span>
+			<span class="text-[10px] leading-tight text-text-3">Works in light<br/>and dark mode.</span>
 			<button
 				type="button"
 				data-role="reset"

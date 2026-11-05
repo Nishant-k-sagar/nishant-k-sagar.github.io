@@ -70,87 +70,111 @@ const imageUrl = new URL(image, Astro.site).href;
     </script>
     <script is:inline>
       (function () {
-        var DEFAULT_HUE = 156
-        var DEFAULT_SAT = 55
-        var MAX_SAT = 70
+        var STORAGE_KEY = 'ns:palette'
+        var DEFAULTS = { bgHue: 156, bgSat: 52, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8 }
 
         function finite(value, fallback) { var n = Number(value); return Number.isFinite(n) ? n : fallback }
         function clamp(value, min, max) { return Math.min(max, Math.max(min, value)) }
-        function wrapHue(value) { return ((finite(value, DEFAULT_HUE) % 360) + 360) % 360 }
+        function wrapHue(value, fallback) { return ((clamp(finite(value, fallback || DEFAULTS.bgHue), -3600, 3600) % 360) + 360) % 360 }
+        function part(p, key, fallback, min, max) { return clamp(finite(p[key], fallback), min, max) }
+        function normalize(p) {
+          p = p || {}
+          return {
+            bgHue: wrapHue(p.bgHue, DEFAULTS.bgHue),
+            bgSat: part(p, 'bgSat', DEFAULTS.bgSat, 0, 70),
+            accentHue: wrapHue(p.accentHue, DEFAULTS.accentHue),
+            accentSat: part(p, 'accentSat', DEFAULTS.accentSat, 20, 85),
+            inkHue: wrapHue(p.inkHue, DEFAULTS.inkHue),
+            inkSat: part(p, 'inkSat', DEFAULTS.inkSat, 0, 18),
+          }
+        }
         function hsl(h, s, l) { return 'hsl(' + Math.round(h * 10) / 10 + ', ' + Math.round(s) + '%, ' + l + '%)' }
-        function build(hue, sat) {
-          hue = wrapHue(hue)
-          sat = clamp(finite(sat, DEFAULT_SAT), 0, MAX_SAT)
-          var textSat = clamp(sat * 0.12, 2, 12)
-          var borderSat = clamp(sat * 0.12, 4, 14)
-          var darkSat = clamp(sat * 0.35, 6, 30)
-          var darkTextSat = clamp(sat * 0.18, 4, 18)
+        function build(p) {
+          var bgHue = p.bgHue
+          var bgSat = p.bgSat
+          var accentHue = p.accentHue
+          var accentSat = p.accentSat
+          var inkHue = p.inkHue
+          var inkSat = p.inkSat
+          var bg2Sat = clamp(bgSat - 15, 0, 70)
+          var bg3Sat = clamp(bgSat - 20, 0, 70)
+          var surfaceSat = clamp(bgSat * 0.25, 0, 18)
+          var borderSat = clamp(bgSat * 0.15, 4, 14)
+          var darkBgSat = clamp(bgSat * 0.35, 6, 30)
+          var darkBorderSat = clamp(bgSat * 0.28, 8, 30)
           return [
             ':root[data-palette="custom"] {',
-            '--color-bg: ' + hsl(hue, sat, 96) + ';',
-            '--color-bg-2: ' + hsl(hue, clamp(sat - 15, 0, MAX_SAT), 92) + ';',
-            '--color-bg-3: ' + hsl(hue, clamp(sat - 20, 0, MAX_SAT), 88) + ';',
-            '--color-surface: ' + hsl(hue, clamp(sat * 0.25, 0, 25), 99) + ';',
-            '--color-border: ' + hsl(hue, borderSat, 82) + ';',
-            '--color-border-2: ' + hsl(hue, borderSat, 66) + ';',
-            '--color-text: ' + hsl(hue, textSat, 10) + ';',
-            '--color-text-2: ' + hsl(hue, textSat, 33) + ';',
-            '--color-text-3: ' + hsl(hue, textSat, 64) + ';',
-            '--color-accent: ' + hsl(hue, clamp(sat + 20, 35, 80), 30) + ';',
-            '--color-accent-text: ' + hsl(hue, clamp(sat + 20, 35, 80), 26) + ';',
-            '--color-accent-bg: ' + hsl(hue, clamp(sat * 0.35, 8, 35), 94) + ';',
+            '--color-bg: ' + hsl(bgHue, bgSat, 96) + ';',
+            '--color-bg-2: ' + hsl(bgHue, bg2Sat, 92) + ';',
+            '--color-bg-3: ' + hsl(bgHue, bg3Sat, 88) + ';',
+            '--color-surface: ' + hsl(bgHue, surfaceSat, 99) + ';',
+            '--color-border: ' + hsl(bgHue, borderSat, 82) + ';',
+            '--color-border-2: ' + hsl(bgHue, borderSat, 66) + ';',
+            '--color-text: ' + hsl(inkHue, inkSat, 10) + ';',
+            '--color-text-2: ' + hsl(inkHue, inkSat, 33) + ';',
+            '--color-text-3: ' + hsl(inkHue, inkSat, 64) + ';',
+            '--color-accent: ' + hsl(accentHue, accentSat, 30) + ';',
+            '--color-accent-text: ' + hsl(accentHue, accentSat, 26) + ';',
+            '--color-accent-bg: ' + hsl(accentHue, clamp(accentSat * 0.35, 10, 40), 94) + ';',
             '}',
             '.dark[data-palette="custom"] {',
-            '--color-bg: ' + hsl(hue, darkSat, 8) + ';',
-            '--color-bg-2: ' + hsl(hue, darkSat, 11) + ';',
-            '--color-bg-3: ' + hsl(hue, darkSat, 15) + ';',
-            '--color-surface: ' + hsl(hue, darkSat, 11) + ';',
-            '--color-border: ' + hsl(hue, darkSat, 17) + ';',
-            '--color-border-2: ' + hsl(hue, darkSat, 26) + ';',
-            '--color-text: ' + hsl(hue, darkTextSat, 97) + ';',
-            '--color-text-2: ' + hsl(hue, darkTextSat, 74) + ';',
-            '--color-text-3: ' + hsl(hue, darkTextSat, 57) + ';',
-            '--color-accent: ' + hsl(hue, clamp(sat + 25, 40, 75), 72) + ';',
-            '--color-accent-text: ' + hsl(hue, clamp(sat + 25, 40, 75), 60) + ';',
-            '--color-accent-bg: ' + hsl(hue, clamp(sat * 0.6, 30, 60), 14) + ';',
+            '--color-bg: ' + hsl(bgHue, darkBgSat, 8) + ';',
+            '--color-bg-2: ' + hsl(bgHue, darkBgSat, 11) + ';',
+            '--color-bg-3: ' + hsl(bgHue, darkBgSat, 15) + ';',
+            '--color-surface: ' + hsl(bgHue, darkBgSat, 11) + ';',
+            '--color-border: ' + hsl(bgHue, darkBorderSat, 17) + ';',
+            '--color-border-2: ' + hsl(bgHue, darkBorderSat, 26) + ';',
+            '--color-text: ' + hsl(inkHue, inkSat, 97) + ';',
+            '--color-text-2: ' + hsl(inkHue, inkSat, 74) + ';',
+            '--color-text-3: ' + hsl(inkHue, inkSat, 57) + ';',
+            '--color-accent: ' + hsl(accentHue, accentSat, 72) + ';',
+            '--color-accent-text: ' + hsl(accentHue, accentSat, 60) + ';',
+            '--color-accent-bg: ' + hsl(accentHue, clamp(accentSat * 0.6, 25, 60), 14) + ';',
             '}'
           ].join('\n')
         }
-        function apply(hue, sat, options) {
-          hue = wrapHue(hue)
-          sat = clamp(finite(sat, DEFAULT_SAT), 0, MAX_SAT)
+        function load() {
+          try {
+            var raw = localStorage.getItem(STORAGE_KEY)
+            if (raw) return normalize(JSON.parse(raw))
+            localStorage.removeItem('bg-hue')
+            localStorage.removeItem('bg-sat')
+          } catch (e) {}
+          return null
+        }
+        var current = load() || DEFAULTS
+        function save(p) {
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)) } catch (e) {}
+        }
+        function apply(p, options) {
+          current = normalize(Object.assign({}, current, p || {}))
           var style = document.getElementById('bg-palette-style')
           if (!style) {
             style = document.createElement('style')
             style.id = 'bg-palette-style'
             document.head.appendChild(style)
           }
-          style.textContent = build(hue, sat)
+          style.textContent = build(current)
           document.documentElement.dataset.palette = 'custom'
-          if (!options || options.save !== false) {
-            try {
-              localStorage.setItem('bg-hue', String(hue))
-              localStorage.setItem('bg-sat', String(sat))
-            } catch (e) {}
-          }
-          return { hue: hue, sat: sat }
+          if (!options || options.save !== false) save(current)
+          return Object.assign({}, current)
         }
         function reset() {
-          try {
-            localStorage.removeItem('bg-hue')
-            localStorage.removeItem('bg-sat')
-          } catch (e) {}
+          current = Object.assign({}, DEFAULTS)
+          try { localStorage.removeItem(STORAGE_KEY) } catch (e) {}
           var style = document.getElementById('bg-palette-style')
           if (style) style.remove()
           try { delete document.documentElement.dataset.palette } catch (e) { document.documentElement.removeAttribute('data-palette') }
+          return Object.assign({}, DEFAULTS)
         }
-        window.__palette = { DEFAULT_HUE: DEFAULT_HUE, DEFAULT_SAT: DEFAULT_SAT, apply: apply, reset: reset }
+        window.__palette = {
+          DEFAULTS: Object.assign({}, DEFAULTS),
+          current: function () { return Object.assign({}, current) },
+          apply: apply,
+          reset: reset,
+        }
         try {
-          var hue = localStorage.getItem('bg-hue')
-          var sat = localStorage.getItem('bg-sat')
-          if (hue !== null || sat !== null) {
-            apply(hue === null ? DEFAULT_HUE : hue, sat === null ? DEFAULT_SAT : sat, { save: false })
-          }
+          if (localStorage.getItem(STORAGE_KEY)) apply(current, { save: false })
         } catch (e) {}
       })();
     </script>
