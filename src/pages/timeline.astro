@@ -165,21 +165,11 @@ const experienceEntries = allEntries
   </main>
 
   <script>
-    // Run immediately before paint to prevent flash
     (() => {
       const STORAGE_KEY = 'timeline:active-tab';
       const activeTab = localStorage.getItem(STORAGE_KEY);
 
-      // Hide all sections by default before DOM ready
-      document.write(`
-        <style>
-          #main-timeline-section,
-          #experience-timeline-section {
-            display: none;
-          }
-        </style>
-      `);
-
+      // Both sections start with the `hidden` class, so nothing flashes before hydration.
       document.addEventListener('DOMContentLoaded', () => {
         const mainTab = document.getElementById('main-timeline-tab') as HTMLElement | null;
         const experienceTab = document.getElementById('experience-timeline-tab') as HTMLElement | null;
