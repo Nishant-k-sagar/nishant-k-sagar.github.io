@@ -25,6 +25,9 @@ All content lives in:
 /src/content/projects/   ← project case studies
 /src/content/pages/      ← standalone pages content
 /src/content/timeline/   ← experience and milestones
+/src/content/home/       ← home page intro
+/src/content/skills/     ← skills groups on the home page
+/src/content/socials/    ← links on the socials page
 ```
 
 Rules:
@@ -123,6 +126,33 @@ hide: boolean
 pinned: boolean
 highlighted: boolean
 ```
+
+### Site content - `/src/content/home/`, `/skills/`, `/socials/`
+
+Text that used to be written inside page files. All of it is editable from the CMS.
+
+```yaml
+# home/intro.md   (the home page shows the entry named "intro")
+title: string
+status: "draft" | "published" | "archived" (default: published)
+# body = the intro paragraphs (markdown)
+
+# skills/*.md     (one file per skills group, sorted by order)
+title: string
+order: number               # default 100
+items: string[]             # at least one
+status: ...
+
+# socials/*.md    (one file per link on /socials, sorted by order)
+title: string
+url: string
+description: string
+icon: "github" | "linkedin" | "email" | "globe"
+order: number               # default 100
+status: ...
+```
+
+The About page text lives in `/src/content/pages/about.md`.
 
 ### Status rules
 

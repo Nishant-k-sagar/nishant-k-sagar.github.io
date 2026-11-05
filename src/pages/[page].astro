@@ -4,9 +4,9 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
 
-// Standalone pages from src/content/pages/ (start-here, links, ...). The "now" page has its own route.
+// Standalone pages from src/content/pages/ (start-here, links, ...). The "now" and "about" pages have their own routes.
 export async function getStaticPaths() {
-  const pages = await getCollection('pages', ({ id, data }) => id !== 'now' && data.status === 'published');
+  const pages = await getCollection('pages', ({ id, data }) => id !== 'now' && id !== 'about' && data.status === 'published');
   return pages.map((page) => ({ params: { page: page.id }, props: { page } }));
 }
 

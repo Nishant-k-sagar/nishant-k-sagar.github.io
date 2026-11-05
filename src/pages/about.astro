@@ -2,6 +2,13 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+
+// The About text lives in src/content/pages/about.md so it can be edited from the CMS.
+const about = (
+  await getCollection('pages', ({ id, data }) => id === 'about' && data.status === 'published')
+)[0];
+const AboutContent = about ? (await render(about)).Content : null;
 ---
 
 <BaseLayout title="Nishant Kumar Sagar | About" description="About Nishant Kumar Sagar.">
@@ -9,19 +16,10 @@ import Footer from '../components/Footer.astro';
 
   <main class="flex-1">
     <div class="max-w-3xl mx-auto px-4 py-12">
-      <h1 class="text-3xl font-bold mb-8">About</h1>
+      <h1 class="text-3xl font-bold mb-8">{about?.data.title ?? 'About'}</h1>
 
       <div class="prose prose-sm sm:prose-base">
-        <p>Welcome to my personal website. I am a software developer.</p>
-
-        <p>Here you will find my projects, blog posts, and what I'm currently working on.</p>
-
-        <h2>Skills</h2>
-        <ul>
-          <li>Web Development</li>
-          <li>Software Architecture</li>
-          <li>Technical Writing</li>
-        </ul>
+        {AboutContent && <AboutContent />}
       </div>
     </div>
   </main>

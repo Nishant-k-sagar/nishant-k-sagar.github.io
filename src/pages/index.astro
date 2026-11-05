@@ -4,7 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import BlogCard from "../components/BlogCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import { sortPosts, sortProjects } from "../utils/sort-posts";
 
 const allBlogPosts = await getCollection(
@@ -15,6 +15,18 @@ const allProjects = await getCollection(
 	"projects",
 	({ data }) => data.status === "published",
 );
+
+// Home intro and skills come from content files (src/content/home, src/content/skills).
+const introEntry = (
+	await getCollection(
+		"home",
+		({ id, data }) => id === "intro" && data.status === "published",
+	)
+)[0];
+const IntroContent = introEntry ? (await render(introEntry)).Content : null;
+const skillGroups = (
+	await getCollection("skills", ({ data }) => data.status === "published")
+).sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
 
 // Filter only featured items first, then sort by date latest, take top 3
 const recentPosts = sortPosts(
@@ -55,14 +67,9 @@ const jsonLd = {
 					<span class='text-xl sm:text-2xl lg:text-3xl'>I am</span>
 					<span class='text-green-600'>Nishant</span>
 				</h1>
-				<p
-					class='text-text-2 leading-relaxed font-sans max-w-2xl mb-0'
-					style="font-size: clamp(0.875rem, 2vw, 1.0625rem); line-height: 1.7;">
-					I am an aspiring software engineer passionate about scaled systems and system architecture. I have been studying architectures and trade-offs for quite some time. Currently, I am working on DSA-Cookbook and optimizing the DSA revision steps for seasoned coders. I am also exploring transformer architectures from the inside out.
-					<br>
-					<br>
-					I publish my projects as open source and have recently been contributing to the CNCF landscape. I keep learning along the way and write about the things I discover. My interests lie in distributed systems, design decisions, and trade-offs.
-				</p>
+				<div class='hero-intro text-text-2 leading-relaxed font-sans max-w-2xl'>
+					{IntroContent && <IntroContent />}
+				</div>
 			</div>
 		</section>
 
@@ -170,160 +177,23 @@ const jsonLd = {
 					class='overflow-hidden max-h-0 transition-all duration-300 ease-in-out'>
 					<div
 						class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2'>
-						<div
-							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
-							<h3
-								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
-								Frontend
-							</h3>
-							<div class='flex flex-wrap gap-1'>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>React</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>TypeScript</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Next.js</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Tailwind</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Astro</span
-								>
+						{skillGroups.map((group) => (
+							<div
+								class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
+								<h3
+									class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
+									{group.data.title}
+								</h3>
+								<div class='flex flex-wrap gap-1'>
+									{group.data.items.map((item) => (
+										<span
+											class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
+											>{item}</span
+										>
+									))}
+								</div>
 							</div>
-						</div>
-						<div
-							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
-							<h3
-								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
-								Backend
-							</h3>
-							<div class='flex flex-wrap gap-1'>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Node.js</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Express</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>PHP</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>SQL</span
-								>
-							</div>
-						</div>
-						<div
-							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
-							<h3
-								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
-								DevOps &amp; Tools
-							</h3>
-							<div class='flex flex-wrap gap-1'>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Docker</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Azure</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Git</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Github Actions</span
-								>
-							</div>
-						</div>
-						<div
-							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
-							<h3
-								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
-								Can easily hop on
-							</h3>
-							<div class='flex flex-wrap gap-1'>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Python</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Django</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>FastAPI</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>PostgreSQL</span
-								>
-							</div>
-						</div>
-						<div
-							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
-							<h3
-								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
-								Languages
-							</h3>
-							<div class='flex flex-wrap gap-1'>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>C++</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>javascript</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>python</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>php</span
-								>
-							</div>
-						</div>
-						<div
-							class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
-							<h3
-								class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
-								So so handy with
-							</h3>
-							<div class='flex flex-wrap gap-1'>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>codex</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>claude</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>APIs</span
-								>
-								<span
-									class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
-									>Postman</span
-								>
-							</div>
-						</div>
+						))}
 					</div>
 				</div>
 			</div>
@@ -357,3 +227,15 @@ const jsonLd = {
 
 	<Footer />
 </BaseLayout>
+
+<style>
+	.hero-intro :global(p) {
+		font-size: clamp(0.875rem, 2vw, 1.0625rem);
+		line-height: 1.7;
+		margin: 0;
+		max-width: none;
+	}
+	.hero-intro :global(p + p) {
+		margin-top: 1.7em;
+	}
+</style>

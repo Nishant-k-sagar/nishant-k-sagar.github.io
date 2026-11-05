@@ -2,33 +2,18 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { getCollection } from 'astro:content';
 
-const socialLinks = [
-  {
-    name: 'GitHub',
-    url: 'https://github.com/nishant-k-sagar',
-    description: 'Open source projects and code',
-    icon: 'github'
-  },
-  {
-    name: 'LinkedIn',
-    url: 'https://linkedin.com/in/nishant-k-sagar',
-    description: 'Professional profile and network',
-    icon: 'linkedin'
-  },
-  {
-    name: 'Email',
-    url: 'https://mail.google.com/mail/?view=cm&fs=1&to=nishantsagar004@gmail.com&su=Reaching%20out%20from%20portfolio',
-    description: 'Mail to: nishantsagar004@gmail.com or click it',
-    icon: 'email'
-  },
-  {
-    name: 'Old Portfolio',
-    url: 'https://nishantksagar.netlify.app/',
-    description: 'Link to my old portfolio',
-    icon: 'globe'
-  }
-];
+const socialLinks = (
+  await getCollection('socials', ({ data }) => data.status === 'published')
+)
+  .sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id))
+  .map((entry) => ({
+    name: entry.data.title,
+    url: entry.data.url,
+    description: entry.data.description,
+    icon: entry.data.icon,
+  }));
 ---
 
 <BaseLayout title="Nishant Kumar Sagar | Socials" description="Where to find me online.">
