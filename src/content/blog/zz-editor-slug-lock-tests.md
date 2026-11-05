@@ -1,0 +1,11 @@
+---
+title: "Zz editor slug lock tests"
+date: "2026-11-06"
+tags: ["react", "vite", "cloud"]
+status: "published"
+featured: false
+highlighted: false
+wrap_code: false
+---
+
+**First** paragraph of the post. Another sentence here.
