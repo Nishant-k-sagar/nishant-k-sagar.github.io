@@ -1,4 +1,6 @@
 ---
+import BackgroundPicker from "./BackgroundPicker.astro";
+
 const navItems = [
 	{ href: "/", label: "Home" },
 	{ href: "/blog", label: "Blog" },
@@ -70,6 +72,7 @@ const searchActive =
 							d='m20 20-3.5-3.5'></path>
 					</svg>
 				</button>
+				<BackgroundPicker />
 				<button
 					id='theme-toggle'
 					class='w-6 h-6 rounded flex items-center justify-center hover:bg-bg-3 transition-colors'>
@@ -117,6 +120,7 @@ const searchActive =
 							d='m20 20-3.5-3.5'></path>
 					</svg>
 				</button>
+				<BackgroundPicker />
 				<button
 					id='mobile-theme-toggle'
 					class='w-6 h-6 bg-bg flex items-center justify-center hover:bg-bg-2 transition-colors'>
@@ -325,6 +329,94 @@ const searchActive =
 
 			document.addEventListener("keydown", (e) => {
 				if (e.key === "Escape") closeSearch();
+			});
+
+			// Background palette (stored locally in the browser, no server round-trip)
+			const pickers = document.querySelectorAll(".bg-picker");
+			const DEFAULT_HUE = 156;
+			const DEFAULT_SAT = 55;
+
+			function closePalettePanels(except) {
+				pickers.forEach((other) => {
+					if (other === except) return;
+					other.querySelector(".bg-picker-panel")?.classList.add("hidden");
+					other.querySelector(".bg-picker-toggle")?.setAttribute("aria-expanded", "false");
+				});
+			}
+
+			function syncPaletteOutputs(picker) {
+				const hue = picker.querySelector("[data-role='hue']");
+				const sat = picker.querySelector("[data-role='sat']");
+				const hueOutput = picker.querySelector("[data-role='hue-value']");
+				const satOutput = picker.querySelector("[data-role='sat-value']");
+				const h = Math.round(Number(hue?.value ?? DEFAULT_HUE));
+				const s = Math.round(Number(sat?.value ?? DEFAULT_SAT));
+				if (hue) hue.setAttribute("aria-valuetext", `${h} degrees`);
+				if (hueOutput) hueOutput.textContent = `${((h % 360) + 360) % 360}°`;
+				if (satOutput) satOutput.textContent = `${Math.min(70, Math.max(0, s))}%`;
+			}
+
+			function applyPaletteFromPicker(picker) {
+				const hue = picker.querySelector("[data-role='hue']");
+				const sat = picker.querySelector("[data-role='sat']");
+				if (!hue || !sat) return;
+				window.__palette?.apply(Number(hue.value), Number(sat.value));
+				syncPaletteOutputs(picker);
+			}
+
+			pickers.forEach((picker) => {
+				const toggle = picker.querySelector(".bg-picker-toggle");
+				const panel = picker.querySelector(".bg-picker-panel");
+				const hue = picker.querySelector("[data-role='hue']");
+				const sat = picker.querySelector("[data-role='sat']");
+
+				try {
+					const savedHue = localStorage.getItem("bg-hue");
+					const savedSat = localStorage.getItem("bg-sat");
+					if (hue && savedHue !== null) hue.value = savedHue;
+					if (sat && savedSat !== null) sat.value = savedSat;
+				} catch {}
+				syncPaletteOutputs(picker);
+
+				toggle?.addEventListener("click", () => {
+					if (!panel) return;
+					const willOpen = panel.classList.contains("hidden");
+					closePalettePanels(picker);
+					panel.classList.toggle("hidden", !willOpen);
+					toggle.setAttribute("aria-expanded", String(willOpen));
+				});
+
+				document.addEventListener("click", (e) => {
+					if (!(e.target instanceof Element)) return;
+					if (picker.contains(e.target)) return;
+					panel?.classList.add("hidden");
+					toggle?.setAttribute("aria-expanded", "false");
+				});
+
+				document.addEventListener("keydown", (e) => {
+					if (e.key === "Escape") {
+						panel?.classList.add("hidden");
+						toggle?.setAttribute("aria-expanded", "false");
+					}
+				});
+
+				hue?.addEventListener("input", () => applyPaletteFromPicker(picker));
+				sat?.addEventListener("input", () => applyPaletteFromPicker(picker));
+
+				picker.querySelectorAll("[data-preset-hue]").forEach((button) => {
+					button.addEventListener("click", () => {
+						if (hue) hue.value = button.getAttribute("data-preset-hue") ?? String(DEFAULT_HUE);
+						if (sat) sat.value = button.getAttribute("data-preset-sat") ?? String(DEFAULT_SAT);
+						applyPaletteFromPicker(picker);
+					});
+				});
+
+				picker.querySelector("[data-role='reset']")?.addEventListener("click", () => {
+					window.__palette?.reset();
+					if (hue) hue.value = String(DEFAULT_HUE);
+					if (sat) sat.value = String(DEFAULT_SAT);
+					syncPaletteOutputs(picker);
+				});
 			});
 
 			mobileMenuToggle?.addEventListener("click", () => {
