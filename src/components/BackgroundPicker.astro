@@ -47,6 +47,23 @@ const defaultPalette = PALETTE_DEFAULTS;
 			</button>
 		</div>
 
+		<div class="flex items-center gap-1 rounded-lg border border-border bg-bg-2 p-1 mb-3" role="group" aria-label="Background style">
+			<button
+				type="button"
+				data-bg-style="off"
+				class="flex-1 rounded-md px-2 py-1 text-[10px] font-medium text-text-2 transition-colors"
+				aria-pressed="true">
+				Off
+			</button>
+			<button
+				type="button"
+				data-bg-style="procedural"
+				class="flex-1 rounded-md px-2 py-1 text-[10px] font-medium text-text-2 transition-colors"
+				aria-pressed="false">
+				Procedural
+			</button>
+		</div>
+
 		<div class="grid grid-cols-8 gap-1.5 mb-3" role="group" aria-label="Preset palettes">
 			{presets.map((preset) => (
 				<button

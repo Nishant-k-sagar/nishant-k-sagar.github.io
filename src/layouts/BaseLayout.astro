@@ -71,7 +71,7 @@ const imageUrl = new URL(image, Astro.site).href;
         <script is:inline>
       (function () {
         var STORAGE_KEY = 'ns:palette'
-        var DEFAULTS = { bgHue: 156, bgSat: 50, lightBg: 96, darkBg: 8, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8 }
+        var DEFAULTS = { bgHue: 156, bgSat: 50, lightBg: 96, darkBg: 8, accentHue: 156, accentSat: 65, inkHue: 156, inkSat: 8, bgStyle: 'off' }
 
         function finite(value, fallback) { var n = Number(value); return Number.isFinite(n) ? n : fallback }
         function clamp(value, min, max) { return Math.min(max, Math.max(min, value)) }
@@ -88,6 +88,7 @@ const imageUrl = new URL(image, Astro.site).href;
             accentSat: part(p, 'accentSat', DEFAULTS.accentSat, 20, 85),
             inkHue: wrapHue(p.inkHue, DEFAULTS.inkHue),
             inkSat: part(p, 'inkSat', DEFAULTS.inkSat, 0, 18),
+            bgStyle: p && (p.bgStyle === 'procedural' ? 'procedural' : 'off'),
           }
         }
         function hsl(h, s, l) { return 'hsl(' + Math.round(h * 10) / 10 + ', ' + Math.round(s) + '%, ' + l + '%)' }
@@ -146,6 +147,19 @@ const imageUrl = new URL(image, Astro.site).href;
         }
         var saved = load()
         var current = saved || Object.assign({}, DEFAULTS)
+        function setBgStyle(style) {
+          var layer = document.querySelector('.bg-procedural')
+          var opacity = style === 'procedural' ? '0.7' : '0'
+          if (layer) {
+            layer.style.opacity = opacity
+            void layer.getBoundingClientRect()
+          }
+          if (style === 'procedural') {
+            document.documentElement.style.setProperty('--bg-procedural-opacity', '0.7')
+          } else {
+            document.documentElement.style.removeProperty('--bg-procedural-opacity')
+          }
+        }
         function render() {
           var style = document.getElementById('bg-palette-style')
           if (!style) {
@@ -155,6 +169,7 @@ const imageUrl = new URL(image, Astro.site).href;
           }
           style.textContent = build(current)
           document.documentElement.dataset.palette = 'custom'
+          setBgStyle(current.bgStyle)
         }
         function preview(p) {
           current = normalize(Object.assign({}, current, p || {}))
@@ -175,6 +190,9 @@ const imageUrl = new URL(image, Astro.site).href;
           var style = document.getElementById('bg-palette-style')
           if (style) style.remove()
           try { delete document.documentElement.dataset.palette } catch (e) { document.documentElement.removeAttribute('data-palette') }
+          var layer = document.querySelector('.bg-procedural'); if (layer) layer.style.opacity = '';
+          document.documentElement.style.removeProperty('--bg-procedural-opacity');
+          setBgStyle('off')
           return Object.assign({}, DEFAULTS)
         }
         window.__palette = {
@@ -183,6 +201,7 @@ const imageUrl = new URL(image, Astro.site).href;
           preview: preview,
           save: save,
           reset: reset,
+          setBgStyle: setBgStyle,
           isSaved: function () {
             try { return !!localStorage.getItem(STORAGE_KEY) } catch (e) { return false }
           },
@@ -193,6 +212,7 @@ const imageUrl = new URL(image, Astro.site).href;
   </head>
   </head>
   <body class="bg-bg text-text font-sans min-h-screen flex flex-col">
+    <div id="bg-procedural" class="bg-procedural" aria-hidden="true"></div>
     <slot />
   </body>
 </html>
@@ -310,5 +330,29 @@ const imageUrl = new URL(image, Astro.site).href;
   }
   a {
     transition: color 0.2s ease;
+  }
+
+  .bg-procedural {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: var(--bg-procedural-opacity, 0);
+    transition: opacity 0.4s ease;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 10%, var(--color-accent-bg) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 90%, var(--color-accent-bg) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 30% at 50% 50%, var(--color-bg-2) 0%, transparent 70%);
+  }
+  .bg-procedural::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bg-procedural { transition: none; }
   }
 </style>

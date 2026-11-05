@@ -390,6 +390,17 @@ const searchActive =
 					}
 					if (output) output.textContent = `${value}${control.suffix}`;
 				}
+				syncBgStyleButtons(picker, palette.bgStyle ?? 'off');
+			}
+
+			function syncBgStyleButtons(picker, style) {
+				picker.querySelectorAll("[data-bg-style]").forEach((button) => {
+					const active = button.getAttribute("data-bg-style") === style;
+					button.setAttribute("aria-pressed", String(active));
+					button.classList.toggle("bg-surface", active);
+					button.classList.toggle("text-accent", active);
+					button.classList.toggle("shadow-sm", active);
+				});
 			}
 
 			function readPaletteControls(picker) {
@@ -461,7 +472,28 @@ const searchActive =
 				});
 
 				picker.querySelector("[data-role='save']")?.addEventListener("click", () => {
-					window.__palette?.save();
+					const ok = window.__palette?.save();
+					const button = picker.querySelector("[data-role='save']");
+					if (button) {
+						const original = button.textContent;
+						button.textContent = ok ? "Saved" : "Failed";
+						button.disabled = true;
+						window.setTimeout(() => {
+							button.textContent = original;
+							button.disabled = false;
+						}, 1200);
+					}
+				});
+
+				picker.querySelectorAll("[data-bg-style]").forEach((button) => {
+					button.addEventListener("click", () => {
+						try {
+							const style = button.getAttribute("data-bg-style");
+							if (!style) return;
+							const previewed = window.__palette?.preview({ bgStyle: style }) ?? { bgStyle: style };
+							writePaletteControls(picker, previewed);
+						} catch {}
+					});
 				});
 
 				picker.querySelector("[data-role='reset']")?.addEventListener("click", () => {
