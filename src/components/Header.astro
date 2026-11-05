@@ -4,11 +4,12 @@ const navItems = [
 	{ href: "/blog", label: "Blog" },
 	{ href: "/projects", label: "Projects" },
 	{ href: "/timeline", label: "Timeline" },
-	{ href: "/search", label: "Search" },
 	{ href: "/socials", label: "Socials" },
 ];
 
 const currentPath = Astro.url.pathname;
+const searchActive =
+	currentPath === "/search" || currentPath.startsWith("/search/");
 ---
 
 <!-- Page Loading Indicator -->
@@ -16,7 +17,7 @@ const currentPath = Astro.url.pathname;
 
 <header
 	class='bg-bg border-b border-stone-200 dark:border-zinc-800 relative z-50'>
-	<nav class='w-full px-4 sm:px-6 lg:px-8'>
+	<nav class='relative w-full px-4 sm:px-6 lg:px-8'>
 		<div class='flex items-center justify-between h-12 sm:h-14'>
 			<a
 				href='/'
@@ -43,6 +44,33 @@ const currentPath = Astro.url.pathname;
 					))
 				}
 				<button
+					type='button'
+					class='search-toggle w-6 h-6 rounded flex items-center justify-center hover:bg-bg-3 transition-colors'
+					aria-label='Search'
+					aria-controls='header-search'
+					aria-expanded='false'
+					title='Search'>
+					<svg
+						class={searchActive ? 'w-4 h-4 text-accent' : 'w-4 h-4 text-text'}
+						fill='none'
+						stroke='currentColor'
+						viewBox='0 0 24 24'
+						aria-hidden='true'>
+						<circle
+							cx='11'
+							cy='11'
+							r='7'
+							stroke-linecap='round'
+							stroke-linejoin='round'
+							stroke-width='2'></circle>
+						<path
+							stroke-linecap='round'
+							stroke-linejoin='round'
+							stroke-width='2'
+							d='m20 20-3.5-3.5'></path>
+					</svg>
+				</button>
+				<button
 					id='theme-toggle'
 					class='w-6 h-6 rounded flex items-center justify-center hover:bg-bg-3 transition-colors'>
 					<svg
@@ -62,6 +90,33 @@ const currentPath = Astro.url.pathname;
 
 			<!-- Mobile Navigation Buttons -->
 			<div class='md:hidden flex items-center gap-2'>
+				<button
+					type='button'
+					class='search-toggle w-6 h-6 bg-bg rounded flex items-center justify-center hover:bg-bg-2 transition-colors'
+					aria-label='Search'
+					aria-controls='header-search'
+					aria-expanded='false'
+					title='Search'>
+					<svg
+						class={searchActive ? 'w-4 h-4 text-accent' : 'w-4 h-4 text-text'}
+						fill='none'
+						stroke='currentColor'
+						viewBox='0 0 24 24'
+						aria-hidden='true'>
+						<circle
+							cx='11'
+							cy='11'
+							r='7'
+							stroke-linecap='round'
+							stroke-linejoin='round'
+							stroke-width='2'></circle>
+						<path
+							stroke-linecap='round'
+							stroke-linejoin='round'
+							stroke-width='2'
+							d='m20 20-3.5-3.5'></path>
+					</svg>
+				</button>
 				<button
 					id='mobile-theme-toggle'
 					class='w-6 h-6 bg-bg flex items-center justify-center hover:bg-bg-2 transition-colors'>
@@ -110,6 +165,67 @@ const currentPath = Astro.url.pathname;
 				</button>
 			</div>
 		</div>
+
+		<!-- Search bar (expands inside the nav bar on every breakpoint) -->
+		<form
+			id='header-search'
+			action='/search'
+			method='get'
+			class='hidden absolute inset-0 z-10 items-center gap-2 bg-bg px-4 sm:px-6 lg:px-8'>
+			<label for='header-search-input' class='sr-only'>Search</label>
+			<div class='relative flex-1'>
+				<input
+					id='header-search-input'
+					name='q'
+					type='search'
+					placeholder='Search articles and projects'
+					autocomplete='off'
+					class='w-full bg-surface border border-border text-text rounded pl-3 pr-10 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent'
+				/>
+				<button
+					type='submit'
+					aria-label='Submit search'
+					class='absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded text-text-2 hover:text-accent transition-colors'>
+					<svg
+						class='w-4 h-4'
+						fill='none'
+						stroke='currentColor'
+						viewBox='0 0 24 24'
+						aria-hidden='true'>
+						<circle
+							cx='11'
+							cy='11'
+							r='7'
+							stroke-linecap='round'
+							stroke-linejoin='round'
+							stroke-width='2'></circle>
+						<path
+							stroke-linecap='round'
+							stroke-linejoin='round'
+							stroke-width='2'
+							d='m20 20-3.5-3.5'></path>
+					</svg>
+				</button>
+			</div>
+			<button
+				id='header-search-close'
+				type='button'
+				aria-label='Close search'
+				class='w-8 h-8 flex items-center justify-center rounded text-text-2 hover:text-accent hover:bg-bg-3 transition-colors'>
+				<svg
+					class='w-4 h-4'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					aria-hidden='true'>
+					<path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M6 18L18 6M6 6l12 12'></path>
+				</svg>
+			</button>
+		</form>
 	</nav>
 
 	<!-- Mobile Navigation Menu (Overlay) -->
@@ -160,7 +276,58 @@ const currentPath = Astro.url.pathname;
 			const hamburgerIcon = document.getElementById("hamburger-icon");
 			const closeIcon = document.getElementById("close-icon");
 
+			// Search icon + expandable search bar
+			const searchToggles = document.querySelectorAll(".search-toggle");
+			const searchPanel = document.getElementById("header-search");
+			const searchInput = document.getElementById("header-search-input");
+			const searchClose = document.getElementById("header-search-close");
+
+			function closeSearch() {
+				if (!searchPanel) return;
+				searchPanel.classList.add("hidden");
+				searchPanel.classList.remove("flex");
+				searchToggles.forEach((toggle) =>
+					toggle.setAttribute("aria-expanded", "false"),
+				);
+			}
+
+			function openSearch() {
+				if (!searchPanel) return;
+				searchPanel.classList.remove("hidden");
+				searchPanel.classList.add("flex");
+				searchToggles.forEach((toggle) =>
+					toggle.setAttribute("aria-expanded", "true"),
+				);
+				searchInput?.focus();
+			}
+
+			searchToggles.forEach((toggle) => {
+				toggle.addEventListener("click", (e) => {
+					e.preventDefault();
+					if (searchPanel?.classList.contains("hidden")) {
+						openSearch();
+					} else {
+						closeSearch();
+					}
+				});
+			});
+
+			searchClose?.addEventListener("click", closeSearch);
+
+			document.addEventListener("click", (e) => {
+				if (!(e.target instanceof Element)) return;
+				if (!searchPanel || searchPanel.classList.contains("hidden")) return;
+				if (searchPanel.contains(e.target)) return;
+				if (e.target.closest(".search-toggle")) return;
+				closeSearch();
+			});
+
+			document.addEventListener("keydown", (e) => {
+				if (e.key === "Escape") closeSearch();
+			});
+
 			mobileMenuToggle?.addEventListener("click", () => {
+				closeSearch();
 				mobileMenu?.classList.toggle("hidden");
 				hamburgerIcon?.classList.toggle("hidden");
 				closeIcon?.classList.toggle("hidden");
