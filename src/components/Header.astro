@@ -171,23 +171,14 @@ const searchActive =
 			id='header-search'
 			action='/search'
 			method='get'
-			class='hidden absolute inset-0 z-10 items-center gap-2 bg-bg px-4 sm:px-6 lg:px-8'>
-			<label for='header-search-input' class='sr-only'>Search</label>
-			<div class='relative flex-1'>
-				<input
-					id='header-search-input'
-					name='q'
-					type='search'
-					placeholder='Search articles and projects'
-					autocomplete='off'
-					class='w-full bg-surface border border-border text-text rounded pl-3 pr-10 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent'
-				/>
+			class='hidden absolute inset-0 z-10 items-center bg-bg/95 backdrop-blur-md px-3 sm:px-6 lg:px-8'>
+			<div class='mx-auto flex w-full max-w-xl h-10 sm:h-11 items-center gap-1 sm:gap-2 rounded-full border border-border bg-surface pl-1 pr-1 shadow-lg shadow-black/5 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/30 transition duration-200'>
 				<button
 					type='submit'
 					aria-label='Submit search'
-					class='absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded text-text-2 hover:text-accent transition-colors'>
+					class='w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-text-2 hover:text-accent hover:bg-bg-2 transition-colors'>
 					<svg
-						class='w-4 h-4'
+						class='w-4 h-4 sm:w-5 sm:h-5'
 						fill='none'
 						stroke='currentColor'
 						viewBox='0 0 24 24'
@@ -206,25 +197,35 @@ const searchActive =
 							d='m20 20-3.5-3.5'></path>
 					</svg>
 				</button>
+				<label for='header-search-input' class='sr-only'>Search articles and projects</label>
+				<input
+					id='header-search-input'
+					name='q'
+					type='search'
+					placeholder='Search articles and projects'
+					autocomplete='off'
+					class='flex-1 min-w-0 bg-transparent outline-none placeholder:text-text-3 text-sm sm:text-base text-text'
+				/>
+				<kbd class='hidden md:inline-flex items-center justify-center rounded-md border border-border bg-bg-2 px-2 py-0.5 text-[10px] font-mono font-medium text-text-3'>ESC</kbd>
+				<button
+					id='header-search-close'
+					type='button'
+					aria-label='Close search'
+					class='w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-text-2 hover:text-accent hover:bg-bg-2 transition-colors'>
+					<svg
+						class='w-4 h-4 sm:w-5 sm:h-5'
+						fill='none'
+						stroke='currentColor'
+						viewBox='0 0 24 24'
+						aria-hidden='true'>
+						<path
+							stroke-linecap='round'
+							stroke-linejoin='round'
+							stroke-width='2'
+							d='M6 18L18 6M6 6l12 12'></path>
+					</svg>
+				</button>
 			</div>
-			<button
-				id='header-search-close'
-				type='button'
-				aria-label='Close search'
-				class='w-8 h-8 flex items-center justify-center rounded text-text-2 hover:text-accent hover:bg-bg-3 transition-colors'>
-				<svg
-					class='w-4 h-4'
-					fill='none'
-					stroke='currentColor'
-					viewBox='0 0 24 24'
-					aria-hidden='true'>
-					<path
-						stroke-linecap='round'
-						stroke-linejoin='round'
-						stroke-width='2'
-						d='M6 18L18 6M6 6l12 12'></path>
-				</svg>
-			</button>
 		</form>
 	</nav>
 
