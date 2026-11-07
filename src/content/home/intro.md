@@ -3,6 +3,10 @@ title: "Home intro"
 status: "published"
 ---
 
-I am an aspiring software engineer passionate about scaled systems and system architecture. I have been studying architectures and trade-offs for quite some time. Currently, I am working on DSA-Cookbook and optimizing the DSA revision steps for seasoned coders. I am also exploring transformer architectures from the inside out.
+I am a software engineer, currently working at Docstribe AI. Here, My work includes building voice agents, AI agents, agentic workflows, micro-services, micro-frontends, agentic workflows, APIs building, API integrations across frontend and backend.
+
+I read and study scaled systems and system architecture closely. I have been studying architectures and trade-offs. Currently, I am building a platform for laid off people listing and hiring. Will update it sooner.
+
+Also, I am building an agentic workflow and orchestration cli tool. It enables me to create custome workflows, pipelines - built for personal use case.
 
 I publish my projects as open source and have recently been contributing to the CNCF landscape. I keep learning along the way and write about the things I discover. My interests lie in distributed systems, design decisions, and trade-offs.
