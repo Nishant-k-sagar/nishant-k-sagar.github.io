@@ -5,6 +5,11 @@ import Footer from '../../components/Footer.astro';
 import TagBadge from '../../components/TagBadge.astro';
 import Prose from '../../components/Prose.astro';
 import { formatDate } from '../../utils/format-date';
+import {
+  buildTagNetwork,
+  findRelatedItems,
+  type SourceItem,
+} from '../../utils/tags';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -17,6 +22,42 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+
+// Related via tags: item <-> item edges from the tag network.
+const allBlog = await getCollection(
+  'blog',
+  ({ data }) => data.status === 'published',
+);
+const allProjects = await getCollection(
+  'projects',
+  ({ data }) => data.status === 'published',
+);
+const tagSources: SourceItem[] = [
+  ...allBlog.map((entry) => ({
+    id: `blog/${entry.id}`,
+    type: 'blog' as const,
+    title: entry.data.title,
+    date: entry.data.date,
+    tags: entry.data.tags,
+    url: `/blog/${entry.id}/`,
+    excerpt: entry.data.seo_description ?? entry.data.excerpt,
+  })),
+  ...allProjects.map((entry) => ({
+    id: `project/${entry.id}`,
+    type: 'project' as const,
+    title: entry.data.title,
+    date: entry.data.date,
+    tags: entry.data.tags,
+    url: `/projects/${entry.id}/`,
+    excerpt: entry.data.excerpt,
+  })),
+];
+const tagNetwork = buildTagNetwork(tagSources);
+const related = findRelatedItems(
+  `project/${project.id}`,
+  tagNetwork,
+  3,
+);
 
 ---
 
@@ -44,7 +85,25 @@ const { Content } = await render(project);
         <Prose>
           <Content />
         </Prose>
-        
+
+        {related.length > 0 && (
+          <section aria-label="Related via tags" class="mt-8 pt-4 border-t border-border">
+            <h2 class="text-sm font-bold font-sans text-text mb-3">Related via tags</h2>
+            <ul class="space-y-2 text-sm">
+              {related.map((item) => (
+                <li>
+                  <span class="text-[10px] uppercase tracking-wide text-text-3">
+                    {item.type === 'blog' ? 'Post' : 'Project'}
+                  </span>{' '}
+                  <a href={item.url} class="font-serif font-bold text-text hover:text-accent transition-colors">
+                    {item.title}
+                  </a>
+                  <p class="text-xs text-text-2 line-clamp-1">{item.excerpt}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
       </div>
     </article>

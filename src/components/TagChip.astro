@@ -1,0 +1,25 @@
+---
+import { getTagUrl } from '../utils/urls';
+import { labelForTag, slugifyTag } from '../utils/tags';
+
+interface Props {
+  tag: string;
+  small?: boolean;
+}
+
+const { tag, small = false } = Astro.props;
+const slug = slugifyTag(tag);
+const label = labelForTag(slug) || tag;
+---
+
+<a
+  href={getTagUrl(tag)}
+  class:list={[
+    small
+      ? 'text-[10px] px-0.5 py-0 rounded-sm'
+      : 'text-[10px] sm:text-xs px-1 py-0.5 sm:px-1.5 rounded-pill',
+    'bg-bg-2/40 dark:bg-dark-bg-2/40 border-0 text-text-3 dark:text-dark-text-3 hover:text-accent transition-colors',
+  ]}
+>
+  {label}
+</a>
