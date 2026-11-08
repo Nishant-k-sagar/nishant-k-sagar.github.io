@@ -1,16 +1,19 @@
 ---
 import { getTagUrl } from '../utils/urls';
+import { labelForTag, slugifyTag } from '../utils/tags';
 
 interface Props {
   tag: string;
 }
 
 const { tag } = Astro.props;
+const slug = slugifyTag(tag);
+const label = labelForTag(slug) || tag;
 ---
 
 <a
   href={getTagUrl(tag)}
   class="inline-block px-3 py-1 text-xs font-medium bg-bg-3 text-text-2 rounded-full hover:bg-accent/10 hover:text-accent transition-colors"
 >
-  {tag}
+  {label}
 </a>

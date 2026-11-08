@@ -1,6 +1,6 @@
 ---
 import { formatDate } from "../utils/format-date";
-import { getTagUrl } from "../utils/urls";
+import TagChip from "./TagChip.astro";
 
 interface Props {
 	title: string;
@@ -25,10 +25,9 @@ const formattedDate = formatDate(date);
 
 		<span class='flex items-center gap-0.5 flex-shrink-0 flex-wrap'>
 			{
-				tags
-					.map((tag) => (
-						<a href={getTagUrl(tag)} class='text-[10px] px-0.5 py-0 rounded-sm bg-bg-2/40 dark:bg-dark-bg-2/40 border-0 text-text-3 dark:text-dark-text-3 hover:text-accent transition-colors'>{tag}</a>
-					))
+				tags.map((tag) => (
+					<TagChip tag={tag} small />
+				))
 			}
 		</span>
 	</div>
