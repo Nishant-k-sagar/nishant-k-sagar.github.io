@@ -1,0 +1,159 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TagChip from '../components/TagChip.astro';
+import { getCollection } from 'astro:content';
+import { buildTagNetwork, type SourceItem } from '../utils/tags';
+import { formatDate } from '../utils/format-date';
+
+const blog = await getCollection(
+  'blog',
+  ({ data }) => data.status === 'published',
+);
+const projects = await getCollection(
+  'projects',
+  ({ data }) => data.status === 'published',
+);
+
+const sources: SourceItem[] = [
+  ...blog.map((post) => ({
+    id: `blog/${post.id}`,
+    type: 'blog' as const,
+    title: post.data.title,
+    date: post.data.date,
+    tags: post.data.tags,
+    url: `/blog/${post.id}/`,
+    excerpt: post.data.seo_description ?? post.data.excerpt,
+  })),
+  ...projects.map((project) => ({
+    id: `project/${project.id}`,
+    type: 'project' as const,
+    title: project.data.title,
+    date: project.data.date,
+    tags: project.data.tags,
+    url: `/projects/${project.id}/`,
+    excerpt: project.data.excerpt,
+  })),
+];
+
+const network = buildTagNetwork(sources);
+
+// Preview shows most-connected tags first (~3 lines). Full list on /tags/all/.
+const popularTags = [...network.tags]
+  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+  .slice(0, 15);
+const hasMore = popularTags.length < network.tags.length;
+---
+
+<BaseLayout
+  title="Nishant Kumar Sagar | Tags"
+  description="Every tag on this site and the posts and projects connected to it."
+>
+  <Header />
+
+  <main class="flex-1">
+    <section class="py-6 px-4 sm:px-6 lg:px-8">
+      <div id="top" class="max-w-5xl mx-auto scroll-mt-24">
+        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold font-sans text-green-600 underline decoration-green-600 mb-4">Tags</h1>
+
+        <div class="mb-10">
+          <nav aria-label="Tags" class="flex flex-wrap gap-2">
+            {
+              popularTags.map((tag) => (
+                <a
+                  href={`#${tag.slug}`}
+                  class="inline-block px-3 py-1 text-xs font-medium bg-bg-3 text-text-2 rounded-full hover:bg-accent/10 hover:text-accent transition-colors"
+                >
+                  {tag.label}
+                  <span class="text-text-3"> {tag.count}</span>
+                </a>
+              ))
+            }
+          </nav>
+
+          {hasMore && (
+            <a
+              href="/tags/all/"
+              class="mt-3 inline-block px-3 py-1 text-xs font-medium border border-border text-text-2 rounded-full hover:bg-accent/10 hover:text-accent transition-colors"
+            >
+              All tags
+            </a>
+          )}
+        </div>
+
+        <div id="tag-groups" class="space-y-10">
+          {
+            network.tags.map((tag) => (
+              <section id={tag.slug} class="scroll-mt-24 border-t border-border pt-6">
+                <header class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+                  <h2 class="text-base sm:text-lg font-bold font-serif text-text">
+                    {tag.label}
+                  </h2>
+                  <span class="text-xs text-text-3">
+                    {tag.count} item{tag.count === 1 ? '' : 's'}
+                  </span>
+                  {tag.relatedTags.length > 0 && (
+                    <span class="text-xs text-text-3">
+                      &middot; related:{' '}
+                      {tag.relatedTags.map((rel) => (
+                        <a
+                          href={`#${rel.slug}`}
+                          class="text-accent hover:underline mr-1.5"
+                        >
+                          {rel.label}
+                          <span class="text-text-3"> ({rel.weight})</span>
+                        </a>
+                      ))}
+                    </span>
+                  )}
+                </header>
+
+                <ul class="space-y-2">
+                  {tag.items.map((item) => (
+                    <li class="border-b border-border/50 pb-2">
+                      <div class="flex items-center gap-2 text-[10px] text-text-3">
+                        <span class="uppercase tracking-wide">
+                          {item.type === 'blog' ? 'Post' : 'Project'}
+                        </span>
+                        <time datetime={item.date}>{formatDate(item.date)}</time>
+                      </div>
+                      <a
+                        href={item.url}
+                        class="font-serif font-bold text-text hover:text-accent transition-colors"
+                      >
+                        {item.title}
+                      </a>
+                      <p class="text-xs sm:text-sm text-text-2 line-clamp-1">{item.excerpt}</p>
+                      <div class="flex flex-wrap gap-1.5 mt-1">
+                        {item.tags.map((slug) => (
+                          <TagChip tag={slug} small />
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))
+          }
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-border flex flex-wrap gap-x-4 gap-y-2">
+          <a href="#top" class="text-sm text-accent hover:underline font-medium">&uarr; Back to top</a>
+          <a href="/tags/all/" class="text-sm text-accent hover:underline font-medium">All tags A-Z &rarr;</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style is:global>
+  /* Filtered view: when the URL has #slug, show only that tag group.
+     No routing change, no JS — pure CSS :target + :has. Browsers
+     without :has support fall back to showing all groups. */
+  #tag-groups:has(> section:target) > section:not(:target) {
+    display: none;
+  }
+</style>

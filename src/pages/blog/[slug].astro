@@ -8,6 +8,11 @@ import ReadingTime from '../../components/ReadingTime.astro';
 import { formatDate } from '../../utils/format-date';
 import { sortPosts } from '../../utils/sort-posts';
 import { getPostUrl } from '../../utils/urls';
+import {
+  buildTagNetwork,
+  findRelatedItems,
+  type SourceItem,
+} from '../../utils/tags';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -31,6 +36,42 @@ export async function getStaticPaths() {
 
 const { post, prev, next } = Astro.props;
 const { Content, headings } = await render(post);
+
+// Related via tags: item <-> item edges from the tag network.
+const allBlog = await getCollection(
+  'blog',
+  ({ data }) => data.status === 'published',
+);
+const allProjects = await getCollection(
+  'projects',
+  ({ data }) => data.status === 'published',
+);
+const tagSources: SourceItem[] = [
+  ...allBlog.map((entry) => ({
+    id: `blog/${entry.id}`,
+    type: 'blog' as const,
+    title: entry.data.title,
+    date: entry.data.date,
+    tags: entry.data.tags,
+    url: `/blog/${entry.id}/`,
+    excerpt: entry.data.seo_description ?? entry.data.excerpt,
+  })),
+  ...allProjects.map((entry) => ({
+    id: `project/${entry.id}`,
+    type: 'project' as const,
+    title: entry.data.title,
+    date: entry.data.date,
+    tags: entry.data.tags,
+    url: `/projects/${entry.id}/`,
+    excerpt: entry.data.excerpt,
+  })),
+];
+const tagNetwork = buildTagNetwork(tagSources);
+const related = findRelatedItems(
+  `blog/${post.id}`,
+  tagNetwork,
+  3,
+);
 
 // Table of contents: h2 and h3 only, shown when the post has enough sections to be worth jumping around.
 const tocItems = headings.filter((h) => h.depth === 2 || h.depth === 3);
@@ -96,6 +137,25 @@ const jsonLd = {
         <Prose wrapCode={post.data.wrap_code}>
           <Content />
         </Prose>
+
+        {related.length > 0 && (
+          <section aria-label="Related via tags" class="mt-10 pt-4 border-t border-border">
+            <h2 class="text-sm font-bold font-sans text-text mb-3">Related via tags</h2>
+            <ul class="space-y-2 text-sm">
+              {related.map((item) => (
+                <li>
+                  <span class="text-[10px] uppercase tracking-wide text-text-3">
+                    {item.type === 'blog' ? 'Post' : 'Project'}
+                  </span>{' '}
+                  <a href={item.url} class="font-serif font-bold text-text hover:text-accent transition-colors">
+                    {item.title}
+                  </a>
+                  <p class="text-xs text-text-2 line-clamp-1">{item.excerpt}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {(prev || next) && (
           <nav aria-label="More posts" class="mt-10 pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
