@@ -45,7 +45,7 @@ const jsonLd = {
   datePublished: new Date(post.data.date).toISOString(),
   dateModified: new Date(post.data.updated ?? post.data.date).toISOString(),
   author: { '@type': 'Person', name: 'Nishant Kumar Sagar' },
-  image: new URL('/images/og-default.png', Astro.site).href,
+  image: new URL(post.data.cover ?? '/images/og-default.png', Astro.site).href,
 };
 ---
 
@@ -54,6 +54,7 @@ const jsonLd = {
   description={post.data.seo_description ?? post.data.excerpt}
   canonical={post.data.canonical_url}
   type="article"
+  image={post.data.cover}
   jsonLd={jsonLd}
 >
   <Header />

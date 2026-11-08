@@ -13,6 +13,12 @@
   "engines": {
     "node": ">=22"
   },
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "Firefox ESR",
+    "not dead"
+  ],
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/rss": "^4.0.18",

@@ -16,6 +16,25 @@ export function dateValue(dateString: string): number {
   return Number.isNaN(time) ? 0 : time;
 }
 
+const MONTH_ONLY = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+/** True for plain months like "2026-04". */
+export function isValidMonth(monthString: string): boolean {
+  return MONTH_ONLY.test(monthString);
+}
+
+/** Format "2024-01" as "Jan 2024". Returns the input unchanged when it is not a valid month. */
+export function formatMonth(monthString: string): string {
+  if (!isValidMonth(monthString)) return monthString;
+
+  const [year, month] = monthString.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  });
+}
+
 /**
  * Format ISO date string to dd-mm-yyyy format
  * Returns format like "10-04-2026"

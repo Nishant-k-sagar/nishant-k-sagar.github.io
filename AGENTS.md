@@ -57,6 +57,7 @@ Optional frontmatter fields:
 ```yaml
 slug: string                # optional slug override
 status: "draft" | "published" | "archived" (default: draft)
+cover: string               # optional image path under /images, used for social cards
 series: string              # series title, must match exactly across posts
 series_order: number        # position within the series, 1-indexed
 featured: boolean           # show on homepage (default: false)

@@ -4,6 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import BlogCard from "../components/BlogCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import ExperienceItem from "../components/ExperienceItem.astro";
 import { getCollection, render } from "astro:content";
 import { sortPosts, sortProjects } from "../utils/sort-posts";
 
@@ -27,6 +28,22 @@ const IntroContent = introEntry ? (await render(introEntry)).Content : null;
 const skillGroups = (
 	await getCollection("skills", ({ data }) => data.status === "published")
 ).sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id));
+
+// Work experience, newest first by start month (entries without a start go last).
+const experiences = (
+	await getCollection("experience", ({ data }) => data.status === "published")
+).sort((a, b) => {
+	const aStart = a.data.start ?? "";
+	const bStart = b.data.start ?? "";
+	if (aStart !== bStart) {
+		if (!aStart) return 1;
+		if (!bStart) return -1;
+		return bStart.localeCompare(aStart);
+	}
+	return (
+		a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+	);
+});
 
 // Filter only featured items first, then sort by date latest, take top 3
 const recentPosts = sortPosts(
@@ -73,7 +90,27 @@ const jsonLd = {
 			</div>
 		</section>
 
-		<!-- Featured Blog Posts -->
+		<!-- Experience -->
+		{
+			experiences.length > 0 && (
+				<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>
+					<div class='max-w-5xl mx-auto'>
+						<div class='flex items-center justify-between mb-2 sm:mb-4'>
+							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
+								Experience
+							</h2>
+						</div>
+						<div>
+							{experiences.map((entry) => (
+								<ExperienceItem entry={entry} />
+							))}
+						</div>
+					</div>
+				</section>
+			)
+		}
+
+		<!-- Featured blog posts -->
 		{
 			recentPosts.length > 0 && (
 				<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>

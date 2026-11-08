@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { isValidDate } from './utils/format-date';
+import { isValidDate, isValidMonth } from './utils/format-date';
 
 // Dates must be real dates (use YYYY-MM-DD). A typo fails the build instead of rendering "NaN-NaN-NaN".
 const dateString = z.string().refine(isValidDate, { message: 'Invalid date. Use YYYY-MM-DD, e.g. 2026-04-10' });
@@ -16,6 +16,7 @@ const blog = defineCollection({
     tags: z.array(z.string()),
     status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
     excerpt: z.string(),
+    cover: z.string().optional(),
     series: z.string().optional(),
     series_order: z.number().optional(),
     featured: z.boolean().optional(),
@@ -90,6 +91,27 @@ const skills = defineCollection({
   }),
 });
 
+// Work experience shown on the home page, ordered by start date (newest first).
+// The body of each markdown file is the description text.
+const monthString = z
+  .string()
+  .refine(isValidMonth, { message: 'Invalid month. Use YYYY-MM, e.g. 2024-01' });
+
+const experience = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/experience" }),
+  schema: z.object({
+    title: z.string(),
+    company: z.string(),
+    url: z.string().url().optional(),
+    start: monthString.optional(),
+    end: monthString.optional(),
+    period: z.string().optional(),
+    location: z.string().optional(),
+    order: z.number().optional().default(100),
+    status: z.enum(['draft', 'published', 'archived']).optional().default('published'),
+  }),
+});
+
 // Links on the Socials page, ordered by `order`.
 const socials = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/socials" }),
@@ -103,4 +125,4 @@ const socials = defineCollection({
   }),
 });
 
-export const collections = { blog, projects, pages, timeline, home, skills, socials };
+export const collections = { blog, projects, pages, timeline, home, skills, socials, experience };
