@@ -1,7 +1,7 @@
 ---
 title: "Owlset"
 date: "2026-04-10"
-tags: ["python", "streamlit", "SQLlite", "RAG"]
+tags: ["python", "streamlit", "sqlite", "RAG"]
 status: "published"
 excerpt: "Owlset is a perfect onboarding repo helper for new developers."
 live: "https://github.com/nishant-k-sagar/owlset"
@@ -20,7 +20,7 @@ User puts the local repo in the data/repo folder(build one in root directory). I
 
 
 ## Tech stack
-I used the python for the backend and streamlit for the frontend. For the database, I used the SQLlite. 
+I used the python for the backend and streamlit for the frontend. For the database, I used the SQLite. 
 
 It does not use the RAG using FAISS but workaround similar to RAG. or in more specific terms, It uses the context/Knowledge graphs. It uses the NetworkX library for keeping the bidirectional dependencies of the functions with tree-sitter parser.
 
@@ -28,7 +28,7 @@ I have used the Mistral API for the LLM calls. It is written in python. I used L
 
 -python
 -streamlit
--SQLlite
+-SQLite
 -tree-sitter
 -NetworkX
 
