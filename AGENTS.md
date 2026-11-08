@@ -638,10 +638,11 @@ A change is complete only when all of the following pass:
 |---|---|---|
 | `/` | `pages/index.astro` | Hero, bio, featured posts, featured projects |
 | `/blog` | `pages/blog.astro` | Paginated post listing, tag filter |
-| `/blog/[slug]` | `pages/blog/[slug].astro` | Full article, reading time, tags |
-| `/tags/[tag]` | `pages/tags/[tag].astro` | Posts filtered by tag |
+| `/blog/[slug]` | `pages/blog/[slug].astro` | Full article, reading time, tags, related via tags |
+| `/tags` | `pages/tags.astro` | Single index page with all tag groups (tag <-> post/project) |
+| `/tag-network.json` | `pages/tag-network.json.ts` | Build-time tag graph: tag edges, tag<->tag weights, item list |
 | `/projects` | `pages/projects.astro` | Projects grid |
-| `/projects/[slug]` | `pages/projects/[slug].astro` | Project detail, tech stack, links |
+| `/projects/[slug]` | `pages/projects/[slug].astro` | Project detail, tech stack, links, related via tags |
 | `/timeline` | `pages/timeline.astro` | Global timeline combining timeline entries, blogs, projects |
 | `/timeline/[slug]` | `pages/timeline/[slug].astro` | Timeline entry details |
 | `/about` | `pages/about.astro` | Bio, background, skills |
