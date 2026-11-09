@@ -14,3 +14,37 @@ const { wrapCode = false } = Astro.props;
 >
   <slot />
 </div>
+
+<script>
+  // Diagrams: turn ```mermaid code blocks into SVG. Mermaid (~150 kB gzipped) is only
+  // downloaded on pages that actually contain a diagram.
+  const blocks = document.querySelectorAll<HTMLElement>(
+    'pre[data-language="mermaid"], pre > code.language-mermaid',
+  );
+  if (blocks.length > 0) {
+    import('mermaid').then(async ({ default: mermaid }) => {
+      const dark = document.documentElement.classList.contains('dark');
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme: dark ? 'dark' : 'default',
+      });
+      let n = 0;
+      for (const block of blocks) {
+        const pre = block.tagName === 'PRE' ? block : block.parentElement;
+        if (!pre) continue;
+        const id = `mermaid-${n++}`;
+        try {
+          const { svg } = await mermaid.render(id, block.textContent ?? '');
+          const figure = document.createElement('div');
+          figure.className = 'mermaid-diagram my-6 overflow-x-auto text-center';
+          figure.innerHTML = svg;
+          pre.replaceWith(figure);
+        } catch {
+          // Invalid diagram: leave the code block so the mistake is visible.
+          document.getElementById(`d${id}`)?.remove();
+        }
+      }
+    });
+  }
+</script>
