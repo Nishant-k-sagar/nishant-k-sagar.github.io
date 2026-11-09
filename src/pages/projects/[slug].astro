@@ -87,18 +87,18 @@ const related = findRelatedItems(
         </Prose>
 
         {related.length > 0 && (
-          <section aria-label="Related via tags" class="mt-8 pt-4 border-t border-border">
-            <h2 class="text-sm font-bold font-sans text-text mb-3">Related via tags</h2>
-            <ul class="space-y-2 text-sm">
+          <section aria-label="Related via tags" class="mt-12 pt-6 border-t border-border">
+            <h2 class="text-sm font-semibold font-sans text-text mb-4">Related via tags</h2>
+            <ul class="space-y-5 text-sm">
               {related.map((item) => (
                 <li>
-                  <span class="text-[10px] uppercase tracking-wide text-text-3">
+                  <span class="mr-1.5 text-[11px] uppercase tracking-wider text-text-3">
                     {item.type === 'blog' ? 'Post' : 'Project'}
-                  </span>{' '}
-                  <a href={item.url} class="font-serif font-bold text-text hover:text-accent transition-colors">
+                  </span>
+                  <a href={item.url} class="font-serif font-semibold text-text hover:text-accent transition-colors">
                     {item.title}
                   </a>
-                  <p class="text-xs text-text-2 line-clamp-1">{item.excerpt}</p>
+                  <p class="mt-1.5 text-[13px] leading-relaxed text-text-2 line-clamp-2">{item.excerpt}</p>
                 </li>
               ))}
             </ul>
