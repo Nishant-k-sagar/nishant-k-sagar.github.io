@@ -11,7 +11,7 @@ highlighted: true
 ---
 
 I build and deployed my portfolio on the [nishant-k-sagar](https://nishant-k-sagar.github.io). It was clean and nicely deployed and was working in prod as expected.
-The portfolio is completely custom and I added functionalities such that posting blogs, projects, keeping the timeline correct and other related details about me. But I was facing a issue with managing content. I needed to write up the content from my github repo and then deploy the changes onto merge(I'll add portfolio architecture breakdown blog link here).
+The portfolio is completely custom and I added functionalities such that posting blogs, projects, keeping the timeline correct and other related details about me. But I was facing incovenience with managing content. I had to to write up the content from my github repo and then deploy the changes onto main(I'll add portfolio architecture breakdown blog link here).
 
 To solve this problem, I came the portfolio-cms into life.
 
