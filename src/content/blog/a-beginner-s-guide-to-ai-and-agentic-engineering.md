@@ -23,7 +23,7 @@ After spending good times on system design, I am going all in Agentic engineerin
 ## Part I — Foundations
 1. What Agentic Development Is: Workflows vs Agents, Compound AI Systems, and Why It Is Not Just Faster Coding
 2. Anatomy of an Agent: Models, Tools, Context, Loop, Harness, and How One Turn Works
-3. The Harness Landscape: Claude Code, Codex, Cursor, Copilot, Kiro, Gemini CLI, Aider, opencode
+3. The Harness Landscape: Claude Code, Codex, Cursor, Copilot, Kiro, Gemini CLI, Aider, opencode, deepseek
 4. Agentic Use Cases: Use-Case Selection Criteria, What to Delegate, What to Keep
 
 ## Part II — Models, Reasoning and Context
