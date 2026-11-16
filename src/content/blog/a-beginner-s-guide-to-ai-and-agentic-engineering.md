@@ -1,7 +1,7 @@
 ---
 title: "A beginner's guide to AI and agentic engineering"
 date: "2026-11-16"
-status: "published"
+status: "archived"
 excerpt: "This will be a series of 20 articles which will be explaining the AI, agentic engineering and . Although new AI knowledge base can be added in this series later if found relevant."
 featured: false
 highlighted: true
