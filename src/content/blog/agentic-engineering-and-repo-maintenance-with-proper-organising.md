@@ -11,6 +11,8 @@ seo_description: "Maintaining and keeping the repo clean vastly helps in keeping
 wrap_code: false
 ---
 
+# Agentic development - Premise
+
 In agentic development, the repo is not just a place to store code anymore. It is the working memory of every agent that touches it. A human engineer carries a lot in their head: where the config lives, which folder is generated, why a module looks weird. An agent carries nothing between sessions except what it can read from disk. Whatever the repo does not say clearly, the agent will guess. And those guesses pile up over time.
 
 ## Why it matters more with agents
@@ -25,7 +27,7 @@ So a navigable and explicit repo is not a style preference anymore. It directly 
 
 ## Conventional Repo Structure
 
-Here is a layout that is easy for both humans and agents to reason about.
+Here is a layout that is easy for both humans and agents to reason about. I mean this is something very clean and easy to start with.
 
 ```text
 .
@@ -126,9 +128,9 @@ Entropy is the real enemy here.
 3. Hidden setup, like env vars that live only in someone's shell. Keep a `.env.example` and a one-command bootstrap.
 4. Two docs describing the same convention differently. The agent picks one at random.
 
-## Quick audit
+## Quick audit - Things to ensure
 
-Try this on any repo before handing it to an agent:
+Make sure to check this on any repo before handing it to an agent:
 
 1. Can someone run the tests with one documented command?
 2. Is there an `AGENTS.md`, and is it short?
