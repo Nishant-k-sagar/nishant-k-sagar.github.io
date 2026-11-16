@@ -11,23 +11,21 @@ seo_description: "Maintaining and keeping the repo clean vastly helps in keeping
 wrap_code: false
 ---
 
-In agentic development, the repository is no longer just storage for code. It is the **working memory and interface** of every agent that touches it. A human engineer carries tribal knowledge in their head: where the config lives, which folder is generated, why a module is weird. An agent carries nothing between sessions except what it can read from disk. Whatever your repo fails to say explicitly, the agent will guess, and guesses compound into drift.
+In agentic development, the repo is not just a place to store code anymore. It is the working memory of every agent that touches it. A human engineer carries a lot in their head: where the config lives, which folder is generated, why a module looks weird. An agent carries nothing between sessions except what it can read from disk. Whatever the repo does not say clearly, the agent will guess. And those guesses pile up over time.
 
-This post covers why structure matters mechanically, a layout that works well, and the maintenance habits that keep it healthy.
+## Why it matters more with agents
 
-## Why repo organisation matters more with agents
+An agent works with some hard limits:
 
-Agents operate under three hard constraints:
+1. Limited context. It cannot read a 400-file monolith. It navigates with `ls`, `grep` and `glob`, then loads a few files. Predictable names and folders mean it finds the right files in a few calls. Otherwise it burns tokens exploring and still edits the wrong place.
+2. No memory across sessions. If it is not written in a file, it does not exist for the next session.
+3. It copies the nearest example. A clean module gets replicated well. A messy one gets replicated too, bugs included.
 
-1. **Bounded context window.** An agent cannot read a 400-file monolith. It navigates with `ls`, `grep` and `glob`, then loads a handful of files. If names and directories are predictable, it finds the right 5 files in 3 tool calls. If they are not, it burns context on exploration and still edits the wrong place.
-2. **Statelessness across sessions.** Nothing persists unless it is written to a file. Conventions, decisions and gotchas must live in the repo, not in a chat.
-3. **Pattern imitation.** Agents copy the nearest example. A clean, consistent module is replicated faithfully. A messy one gets replicated too, including its bugs.
-
-The practical conclusion: **navigability and explicitness are now correctness properties**, not style preferences.
+So a navigable and explicit repo is not a style preference anymore. It directly affects the quality of the output.
 
 ## Conventional Repo Structure
 
-A layout that is easy for both humans and agents to reason about:
+Here is a layout that is easy for both humans and agents to reason about.
 
 ```text
 .
@@ -36,113 +34,109 @@ A layout that is easy for both humans and agents to reason about:
 ├── docs/
 │   ├── architecture.md    # system map, data flow, boundaries
 │   ├── decisions/         # ADRs: 0001-use-postgres.md ...
-│   └── runbooks/          # how to deploy, rollback, debug
+│   └── runbooks/          # deploy, rollback, debug
 ├── src/
 │   ├── api/               # transport layer only (HTTP handlers)
 │   ├── domain/            # business rules, no I/O
 │   ├── infra/             # DB, queues, external clients
-│   └── shared/            # small, dependency-free utilities
+│   └── shared/            # small utilities, no dependencies
 ├── tests/
 │   ├── unit/              # mirrors src/ one-to-one
 │   ├── integration/
 │   └── fixtures/
-├── scripts/               # one-off and dev tooling, documented
+├── scripts/               # dev tooling, documented
 ├── .github/workflows/     # CI: lint, test, build, deploy
-└── Makefile               # single command surface: make test, make lint
+└── Makefile               # make test, make lint
 ```
 
-Key properties:
+A few things make this work:
 
-- **Layered boundaries.** `domain/` never imports from `infra/` or `api/`. The dependency direction is enforceable by a linter, which gives the agent a fast, objective failure signal instead of a code-review opinion.
-- **Mirrored tests.** `src/domain/billing.py` is tested by `tests/unit/domain/test_billing.py`. The agent never has to search for where tests go.
-- **One command surface.** `make test`, `make lint`, `make build`. An agent that has to discover that tests run via a bespoke incantation will often skip them.
+1. Layered boundaries. `domain/` never imports from `infra/` or `api/`. A linter can enforce it, so the agent gets a quick failure instead of a review comment later.
+2. Tests mirror the source. `src/domain/billing.py` is tested in `tests/unit/domain/test_billing.py`. No searching for where tests go.
+3. One command surface. `make test`, `make lint`, `make build`. If the agent has to discover a custom way to run tests, it will often skip them.
 
-## The agent instructions file
+## AGENTS.md is the most important file
 
-`AGENTS.md` (or `CLAUDE.md`) is the highest-leverage file in the repo. It is loaded at the start of every session, so treat it like a **hot path**: short, accurate, and high-signal.
+`AGENTS.md` (or `CLAUDE.md`) gets loaded at the start of every session. So keep it short, accurate and useful. It is the hot path.
 
 ```markdown
 # Project: payments-service
 
 ## Commands
 - Install: `make setup`
-- Test (fast): `make test`        # must pass before any commit
-- Lint + types: `make lint`
+- Test: `make test`   # must pass before any commit
+- Lint and types: `make lint`
 
 ## Architecture
-- `src/domain` is pure. No network or DB imports. Enforced by import-linter.
+- `src/domain` is pure. No network or DB imports.
 - All DB access goes through `src/infra/db/`.
 
-## Conventions
-- Errors: raise `DomainError` subclasses, never bare `Exception`.
-- New endpoints need an integration test in `tests/integration/api/`.
-
 ## Do not
-- Edit `src/generated/` (produced by `make codegen`).
+- Edit `src/generated/`, it is produced by `make codegen`.
 - Add dependencies without updating `docs/decisions/`.
 ```
 
-Rules of thumb:
+Some rules of thumb:
 
-- Put **commands and constraints** here, not prose about history.
-- Link to deeper docs rather than inlining them. Let the agent pull detail on demand.
-- Every line should change agent behaviour. If deleting a line changes nothing, delete it.
-- Keep it in version control and review it like code, because stale instructions are worse than none.
+1. Put commands and constraints here, not history.
+2. Link to deeper docs instead of copying them. Let the agent pull them when needed.
+3. If removing a line changes nothing in the agent's behaviour, remove it.
+4. Review it like code. Stale instructions are worse than none.
 
-## Make the structure self-enforcing
+## Let the tools enforce it
 
-Documentation rots; automation does not. Convert conventions into checks:
+Docs rot, automation does not. Whatever convention you can turn into a failing command, the agent will actually follow.
 
-| Convention | Enforcement |
-| --- | --- |
-| Layer boundaries | `import-linter`, `dependency-cruiser`, ArchUnit |
-| Formatting and style | formatter + linter in pre-commit and CI |
-| Type safety | `mypy --strict`, `tsc --noEmit` |
-| Test mirrors source | a small CI script that fails on untested modules |
-| No secrets committed | `gitleaks` in pre-commit |
-| Generated files untouched | CI step that regenerates and fails on `git diff` |
+<details>
+<summary>open this section also</summary>
+1. Layer boundaries: `import-linter`, `dependency-cruiser`, ArchUnit<br>
+2. Formatting and style: formatter and linter in pre-commit and CI<br>
+3. Type safety: `mypy --strict`, `tsc --noEmit`<br>
+4. Secrets: `gitleaks` in pre-commit<br>
+5. Generated files untouched: CI regenerates and fails on `git diff`<br>
+6. Test mirrors source: a small CI script that fails on untested modules
+</details>
 
-The principle is a tight **feedback loop**: the agent edits, runs `make lint test`, reads a precise failure, and corrects itself. Every convention you can express as a failing command is a convention the agent will actually follow.
+The loop is simple. The agent edits, runs `make lint test`, reads the exact failure, and corrects itself.
 
-## Git hygiene for agentic workflows
+## Git hygiene
 
-Agents produce more commits, faster. Keep history reviewable:
+Agents produce more commits, faster. So keep the history easy to review.
 
-- **Small, single-purpose branches.** One task, one branch, one PR. Large agent diffs are hard to review and easy to rubber-stamp.
-- **Worktrees for parallelism.** `git worktree add ../feature-x feature-x` lets multiple agents work simultaneously without stepping on each other's working directory.
-- **Conventional commits.** `feat:`, `fix:`, `refactor:` prefixes make history searchable by both humans and agents.
-- **Protected `main`.** Require CI green and review. Never let an agent push directly to the default branch.
-- **Aggressive `.gitignore`.** Build output, caches and virtualenvs must stay out, otherwise they pollute search results and waste context.
+1. One task, one branch, one PR. Big agent diffs are easy to rubber-stamp.
+2. Use worktrees for parallel agents. `git worktree add ../feature-x feature-x` keeps them out of each other's way.
+3. Conventional commits like `feat:` and `fix:` make history searchable.
+4. Protect `main`. CI green and a review before merge, no direct pushes.
+5. Keep a strict `.gitignore`. Build output and caches pollute search and waste context.
 
-## Keeping the repo clean over time
+## Keeping the repo clean
 
-Entropy is the real enemy. A few recurring habits:
+Entropy is the real enemy here.
 
-1. **Delete dead code.** Unused modules are noise that agents will read, trust and extend. Version control remembers them.
-2. **Prune and refresh `AGENTS.md` regularly.** When an agent repeats a mistake, fix the instruction or add a lint rule rather than correcting it in chat.
-3. **Record decisions as ADRs.** A 10-line `docs/decisions/0007-queue-choice.md` stops the next agent from relitigating it.
-4. **Keep files small and focused.** A 2,000-line file is expensive to load and easy to corrupt with partial edits. Prefer many cohesive files under a few hundred lines.
-5. **Name things for grep.** Distinctive, searchable names beat clever ones. `InvoiceRetryPolicy` is findable; `Helper2` is not.
+1. Delete dead code. Agents will read it, trust it and extend it. Git remembers it anyway.
+2. Update `AGENTS.md` when an agent repeats a mistake. Fix the instruction or add a lint rule instead of correcting it in chat every time.
+3. Write ADRs for decisions. A 10-line file stops the next session from reopening the same debate.
+4. Keep files small and focused. A 2000-line file is costly to load and easy to break with partial edits.
+5. Name things so they can be grepped. `InvoiceRetryPolicy` is findable, `Helper2` is not.
 
-## Anti-patterns to avoid
+## Things to avoid
 
-- **The junk drawer.** `utils/`, `misc/` and `common/` folders that grow without bound.
-- **Hidden generation.** Generated code mixed with hand-written code and no marker. Agents will edit it, and the next build will wipe the change.
-- **Implicit setup.** Required env vars or services that exist only in someone's shell. Provide `.env.example` and a one-command bootstrap.
-- **Contradictory docs.** Two files describing the same convention differently. The agent picks one at random.
+1. The junk drawer: `utils/`, `misc/` and `common/` that keep growing.
+2. Generated code mixed with hand-written code without any marker. Agents will edit it and the next build wipes it.
+3. Hidden setup, like env vars that live only in someone's shell. Keep a `.env.example` and a one-command bootstrap.
+4. Two docs describing the same convention differently. The agent picks one at random.
 
-## A quick audit checklist
+## Quick audit
 
-Run through this on any repo you want agents to work in:
+Try this on any repo before handing it to an agent:
 
-- [ ] Can a newcomer run tests with a single documented command?
-- [ ] Does an `AGENTS.md` exist, and is it under about 100 lines?
-- [ ] Are architectural boundaries enforced by a tool, not just described?
-- [ ] Is generated code clearly marked or isolated?
-- [ ] Do tests mirror the source layout?
-- [ ] Does CI run the same commands the agent runs locally?
-- [ ] Are there ADRs for the non-obvious decisions?
+1. Can someone run the tests with one documented command?
+2. Is there an `AGENTS.md`, and is it short?
+3. Are the boundaries enforced by a tool and not just described?
+4. Is generated code clearly marked?
+5. Does CI run the same commands the agent runs locally?
+6. Are the non-obvious decisions written down?
 
 ## Conclusion
 
-Agentic engineering rewards the same things good engineering always did: clear boundaries, explicit contracts, fast feedback and honest documentation. The difference is that the cost of neglect is now paid **on every single agent session**, at machine speed. Invest in the structure once, encode it in tooling, keep the instructions file sharp, and your agents will spend their context on the actual problem instead of rediscovering your repo.
+Agentic engineering rewards what good engineering always did: clear boundaries, fast feedback and honest docs. The difference is that neglect now costs you in every single agent session. Set the structure once, enforce it with tools, keep the instructions sharp, and the agent spends its context on the real problem instead of figuring out the repo.
