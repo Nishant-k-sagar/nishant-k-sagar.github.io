@@ -11,8 +11,6 @@ seo_description: "Maintaining and keeping the repo clean vastly helps in keeping
 wrap_code: false
 ---
 
-# Agentic development - Premise
-
 In agentic development, the repo is not just a place to store code anymore. It is the working memory of every agent that touches it. A human engineer carries a lot in their head: where the config lives, which folder is generated, why a module looks weird. An agent carries nothing between sessions except what it can read from disk. Whatever the repo does not say clearly, the agent will guess. And those guesses pile up over time.
 
 ## Why it matters more with agents
