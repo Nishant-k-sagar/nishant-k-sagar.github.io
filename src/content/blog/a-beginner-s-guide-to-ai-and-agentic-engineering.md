@@ -1,5 +1,5 @@
 ---
-title: "A beginner's guide to AI and agentic engineering"
+title: "A beginner's guide to AI and agentic engineering - CONTENT"
 date: "2026-11-16"
 status: "archived"
 excerpt: "This will be a series of 20 articles which will be explaining the AI, agentic engineering and . Although new AI knowledge base can be added in this series later if found relevant."
