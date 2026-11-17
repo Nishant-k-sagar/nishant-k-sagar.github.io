@@ -2,7 +2,7 @@
 title: "A beginner's guide to AI and agentic engineering"
 date: "2026-11-16"
 tags: ["AI", "Agentic engineering", "Dev"]
-status: "archived"
+status: "published"
 excerpt: "With the rise of AI and coding agent  - the development canvas has changed vastly. This guide will include the agentic role in current development roles."
 featured: true
 highlighted: true
@@ -15,14 +15,14 @@ Software Engineering has been changing almost every decade. From writing Machine
 
 As this change took less than a decade, and I am fond of system's working and familiarities - It captured my attentions and I have devoted a good amount of time learning AI/agentic concepts. Thus, I wanted to write up how to use these agents in the most meaningful way depending on the type of work. You engage with the guide - It will be going from early to real world use.
 
-# Content Premise
+## Content Premise
 
 This guide will be containing more then 20 posts overall and their respective write up link. As the research work is being done in parallel in real world, If felt necessary - content will be appended.
 
-# Agentic Development — Content 
+## Agentic Development — Content 
 
 The articles are written in progressive manner, So It is suggested to read in ascending order of list. I have planned to divide the guide into few parts i.e.
- 
+
 (i) Foundations..
 (ii) Models, reasoning and contexts..
 (iii) Tools and extensibility..
@@ -39,7 +39,7 @@ The articles are written in progressive manner, So It is suggested to read in as
 
 Now enlisting the content.
 
-## 1.Foundations
-1. What Agentic Development Is: Workflows vs Agents, Compound AI Systems, and Why It Is Not Just Faster Coding [read here](https://demo_link.com)
+## 1. Foundations
+1. What Agentic Development Is: Workflows vs Agents, Compound AI Systems, and Why It Is Not Just Faster Coding[read here] (https://demo_link.com)
 
 to be continued..
