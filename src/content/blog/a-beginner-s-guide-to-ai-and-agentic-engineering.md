@@ -23,18 +23,18 @@ This guide will be containing more then 20 posts overall and their respective wr
 
 The articles are written in progressive manner, So It is suggested to read in ascending order of list. I have planned to divide the guide into few parts i.e.
 
-(i) Foundations..\
-(ii) Models, reasoning and contexts..\
-(iii) Tools and extensibility..\
-(iv) Execution mechanics..\
-(v) Agentic coding in real world practice..\
-(vi) Orchestration..\
-(vii) Costs, Economics and Performance..\
-(viii) Production practices and Discipline..\
-(ix) Limit and limitations of LLMs and agents..\
-(x) When not to use the agents..\
-(xi) SDLC, agentic SDLC and beyond..\
-(xii)then finally may be Wrap Up article or Consolidation..
+(i) Foundations\
+(ii) Models, reasoning and contexts\
+(iii) Tools and extensibility\
+(iv) Execution mechanics\
+(v) Agentic coding in real world practice\
+(vi) Orchestration\
+(vii) Costs, Economics and Performance\
+(viii) Production practices and Discipline\
+(ix) Limit and limitations of LLMs and agents\
+(x) When not to use the agents\
+(xi) SDLC, agentic SDLC and beyond\
+(xii)then finally may be Wrap Up article or Consolidation
 
 
 Now enlisting the content.
