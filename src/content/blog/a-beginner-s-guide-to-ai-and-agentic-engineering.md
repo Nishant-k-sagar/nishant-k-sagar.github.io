@@ -40,6 +40,6 @@ The articles are written in progressive manner, So It is suggested to read in as
 Now enlisting the content.
 
 ## 1. Foundations
-1. What Agentic Development Is: Workflows vs Agents, Compound AI Systems, and Why It Is Not Just Faster Coding [read here](https://demo_link.com)
+1. What Agentic Development Is: Workflows vs Agents, Compound AI Systems, and Why It Is Not Just Faster Coding [read here](/blog/what-is-agentic-development/)
 
 to be continued..
