@@ -17,7 +17,7 @@ Before understanding agentic development, we first need to understand what an ag
 
 In simplest words - agent can be defined as an LLM wrapped in a system to perform some specific tasks/goal autonomously. Where LLM works as the brain of a complete system.
 
-GFG defn : An AI agent is an autonomous software system that perceives its environment, makes decisions, and takes actions to achieve a specific goal.
+[GFG](https://www.geeksforgeeks.org/artificial-intelligence/agents-artificial-intelligence/) defn : An AI agent is an autonomous software system that perceives its environment, makes decisions, and takes actions to achieve a specific goal.
 
 Thus utilising and using the agents in software development or any other type of development can be loosely defined as agentic development.
 
@@ -46,3 +46,9 @@ It is something which is derived from the real world working of software develop
 Now coding agents are capable enough to generate the asked code. Thus Bottleneck has moved from writing line by line but verifying the code. Will it serve the purpose? Has it changed any other part of the codebase? Is it optimized for scale? And related verifications.
 
 Also - It has diminished the layer of cross-domain fraction. Cross-domain fraction appears when the developer is not aware of the domain(as it may be completely separate knowledge). But LLMs are corpses of knowledge which have depleted this layer of fraction. Great innovation. But still need verification as LLMs come with warnings of may contain the wrong response.
+
+## Related links
+
+- [Agents in Artificial Intelligence - GeeksforGeeks](https://www.geeksforgeeks.org/artificial-intelligence/agents-artificial-intelligence/)
+- [What is a workflow? - AWS](https://aws.amazon.com/what-is/workflow/)
+- [What are compound AI systems? - Databricks](https://www.databricks.com/blog/what-are-compound-ai-systems)
