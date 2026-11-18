@@ -19,7 +19,7 @@ With time - I will be adding the links for the related articles, which will redi
 
 After spending good times on system design, I am going all in Agentic engineering. Although I have been utilizing the agentic engineering' best practices in my workflows. but will continue to learn the latest concepts and practices.
 
-# Agentic Development — Content
+## Agentic Development — Content
 
 ## Part I — Foundations
 1. What Agentic Development Is: Workflows vs Agents, Compound AI Systems, and Why It Is Not Just Faster Coding
