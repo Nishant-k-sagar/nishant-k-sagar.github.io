@@ -1,10 +1,12 @@
 ---
 import '../styles/tailwind.css';
-import '@fontsource/inter/400.css';
-import '@fontsource/inter/500.css';
-import '@fontsource/inter/600.css';
-import '@fontsource/inter/700.css';
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-500.css';
+import '@fontsource/inter/latin-600.css';
+import '@fontsource/inter/latin-700.css';
 import '@fontsource-variable/literata/index.css';
+import literataLatinUrl from '@fontsource-variable/literata/files/literata-latin-wght-normal.woff2?url';
+import interLatinUrl from '@fontsource/inter/files/inter-latin-400-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -39,6 +41,9 @@ const imageUrl = new URL(image, Astro.site).href;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
     {noindex && <meta name="robots" content="noindex" />}
+
+    <link rel="preload" href={literataLatinUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interLatinUrl} as="font" type="font/woff2" crossorigin />
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -324,6 +329,7 @@ const imageUrl = new URL(image, Astro.site).href;
   }
   body {
     font-family: var(--font-serif);
+    font-size-adjust: 0.51;
     text-wrap: pretty;
   }
   p, li, blockquote {

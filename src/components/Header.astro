@@ -477,7 +477,6 @@ const searchActive =
 			}
 			function writeContrast(picker, palette) {
 				const bg = hexFromHsl(...Object.values(getSlotHsl(palette, 'bg')));
-				const rows = [['ink', 'Text on background'], ['accent', 'Accent on background']];
 				picker.querySelectorAll('[data-contrast]').forEach((el) => {
 					const slot = el.getAttribute('data-contrast');
 					const hex = hexFromHsl(...Object.values(getSlotHsl(palette, slot)));
