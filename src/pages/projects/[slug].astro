@@ -4,6 +4,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import TagBadge from '../../components/TagBadge.astro';
 import Prose from '../../components/Prose.astro';
+import RelatedItems from '../../components/RelatedItems.astro';
 import { formatDate } from '../../utils/format-date';
 import {
   buildTagNetwork,
@@ -69,11 +70,11 @@ const related = findRelatedItems(
   <Header />
   
   <main class="flex-1">
-    <article class="py-4 px-4 sm:px-6 lg:px-8">
+    <article class="py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
       <div class="max-w-5xl mx-auto">
         <header class="mb-4">
           <div class="grid grid-cols-[1fr_auto] items-end gap-x-4 mb-2">
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold font-serif text-text">{project.data.title}</h1>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-semibold font-serif text-text max-w-[68ch]">{project.data.title}</h1>
             <time class="text-xs sm:text-sm text-text-2">{formatDate(project.data.date)}</time>
           </div>
           
@@ -86,24 +87,7 @@ const related = findRelatedItems(
           <Content />
         </Prose>
 
-        {related.length > 0 && (
-          <section aria-label="Related via tags" class="mt-12 pt-6 border-t border-border">
-            <h2 class="text-sm font-semibold font-sans text-text mb-4">Related via tags</h2>
-            <ul class="space-y-5 text-sm">
-              {related.map((item) => (
-                <li>
-                  <span class="mr-1.5 text-[11px] uppercase tracking-wider text-text-3">
-                    {item.type === 'blog' ? 'Post' : 'Project'}
-                  </span>
-                  <a href={item.url} class="font-serif font-semibold text-text hover:text-accent transition-colors">
-                    {item.title}
-                  </a>
-                  <p class="mt-1.5 text-[13px] leading-relaxed text-text-2 line-clamp-2">{item.excerpt}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        <RelatedItems items={related} />
 
       </div>
     </article>

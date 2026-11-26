@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import TagBadge from '../../components/TagBadge.astro';
 import Prose from '../../components/Prose.astro';
 import ReadingTime from '../../components/ReadingTime.astro';
+import RelatedItems from '../../components/RelatedItems.astro';
 import { formatDate } from '../../utils/format-date';
 import { sortPosts } from '../../utils/sort-posts';
 import { getPostUrl } from '../../utils/urls';
@@ -101,11 +102,11 @@ const jsonLd = {
   <Header />
   
   <main class="flex-1">
-    <article class="py-4 px-4 sm:px-6 lg:px-8">
+    <article class="py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
       <div class="max-w-5xl mx-auto">
         <header class="mb-4">
           <div class="grid grid-cols-[1fr_auto] items-end gap-x-4 mb-2">
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold font-serif text-text">{post.data.title}</h1>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-semibold font-serif text-text max-w-[68ch]">{post.data.title}</h1>
             <div class="text-xs sm:text-sm text-text-2 text-right">
               <time datetime={post.data.date}>{formatDate(post.data.date)}</time>
               <span aria-hidden="true"> &middot; </span>
@@ -122,7 +123,7 @@ const jsonLd = {
         </header>
         
         {showToc && (
-          <details class="mb-5 rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm">
+          <details class="mb-6 rounded-lg border border-border bg-surface px-4 py-3 text-sm">
             <summary class="cursor-pointer font-sans font-semibold text-text">On this page</summary>
             <ol class="mt-2 mb-0 list-none space-y-1 p-0">
               {tocItems.map((h) => (
@@ -138,40 +139,27 @@ const jsonLd = {
           <Content />
         </Prose>
 
-        {related.length > 0 && (
-          <section aria-label="Related via tags" class="mt-12 pt-6 border-t border-border">
-            <h2 class="text-sm font-semibold font-sans text-text mb-4">Related via tags</h2>
-            <ul class="space-y-5 text-sm">
-              {related.map((item) => (
-                <li>
-                  <span class="mr-1.5 text-[11px] uppercase tracking-wider text-text-3">
-                    {item.type === 'blog' ? 'Post' : 'Project'}
-                  </span>
-                  <a href={item.url} class="font-serif font-semibold text-text hover:text-accent transition-colors">
-                    {item.title}
-                  </a>
-                  <p class="mt-1.5 text-[13px] leading-relaxed text-text-2 line-clamp-2">{item.excerpt}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        <RelatedItems items={related} />
 
         {(prev || next) && (
-          <nav aria-label="More posts" class="mt-10 pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <nav aria-label="More posts" class="mt-6 pt-6 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               {prev && (
                 <a href={getPostUrl(prev.id)} class="group block">
-                  <span class="block text-xs text-text-3 mb-1">Previous</span>
-                  <span class="font-serif font-semibold text-text group-hover:text-accent-text transition-colors">{prev.title}</span>
+                  <span class="mb-1 block text-[10px] font-medium uppercase tracking-wider text-text-3">Previous</span>
+                  <span class="font-serif text-sm sm:text-base font-semibold leading-snug text-text transition-colors group-hover:text-accent-text group-hover:underline decoration-1 underline-offset-4">
+                    {prev.title}
+                  </span>
                 </a>
               )}
             </div>
             <div class="sm:text-right">
               {next && (
                 <a href={getPostUrl(next.id)} class="group block">
-                  <span class="block text-xs text-text-3 mb-1">Next</span>
-                  <span class="font-serif font-semibold text-text group-hover:text-accent-text transition-colors">{next.title}</span>
+                  <span class="mb-1 block text-[10px] font-medium uppercase tracking-wider text-text-3">Next</span>
+                  <span class="font-serif text-sm sm:text-base font-semibold leading-snug text-text transition-colors group-hover:text-accent-text group-hover:underline decoration-1 underline-offset-4">
+                    {next.title}
+                  </span>
                 </a>
               )}
             </div>

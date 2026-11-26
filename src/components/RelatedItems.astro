@@ -1,0 +1,41 @@
+---
+import type { TaggedItem } from '../utils/tags';
+
+interface Props {
+  items: TaggedItem[];
+}
+
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section aria-label="Related via tags" class="mt-10 pt-6 border-t border-border">
+    <div class="mb-4 flex items-center gap-3">
+      <h2 class="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-text-3">
+        Related via tags
+      </h2>
+      <span class="h-px flex-1 bg-border" aria-hidden="true"></span>
+    </div>
+
+    <ul class="divide-y divide-border">
+      {items.map((item) => (
+        <li class="group py-3">
+          <div class="mb-1 text-[10px] uppercase tracking-wider text-text-3">
+            {item.type === 'blog' ? 'Post' : 'Project'}
+          </div>
+
+          <a
+            href={item.url}
+            class="font-serif text-sm sm:text-base font-semibold leading-snug text-text transition-colors hover:text-accent-text group-hover:underline decoration-1 underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            {item.title}
+          </a>
+
+          <p class="mt-1 font-serif text-sm leading-[1.65] text-text-2 line-clamp-1 max-w-[68ch]">
+            {item.excerpt}
+          </p>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
