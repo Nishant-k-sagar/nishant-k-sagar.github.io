@@ -1,7 +1,7 @@
 ---
 title: "Software Development Engineer"
 company: "Docstribe AI"
-excerpt: "Building voice agents for real customers, AI agents in production, agentic workflows, and the microservices, micro-frontends and APIs behind them."
+excerpt: "Building AI agents in production, voice agents for outreach, agentic workflows, microservices, micro-frontends and APIs behind them."
 url: "https://www.docstribe.com/"
 start: "2026-05"
 period: "Present"
@@ -11,15 +11,34 @@ status: "published"
 
 ## Overview
 
-Building voice agents which are serving real customers, AI agents in production and agentic workflows, along with the micro-services, micro-frontends and APIs behind them. The work spans across frontend and backend, from API design through to integrations across both.
+Worked on multiple projects including voice agents, Messaging platform, EMR, CRM, AI agents, agentic workflows, OCR agents. Contributed across backend and frontend. Built Microservice, deployed, developing and maintaining currently.
+I have worked with Python FastAPI in backend, Next.js in frontend, LangGraph and langChain for agent orchestration, GCP for deployment and Postgresql as DB.
 
-## What I worked on
+# Early Phase
 
-- Built voice agents for real customers.
-- Developed AI agents in production and agentic workflows.
-- Worked on the micro-services, micro-frontends and APIs behind them.
-- Handled API design and integrations across frontend and backend.
+I joined Docstribe AI as an intern at SDE role. I was paired with the core development team and assigned beginner issues - these issues did not touch production database. I shipped VOIP calling featured in Kalaam - our main product. That feature went into prod. Later, I fixed many bugs, issues and shipped more features. Seeing My progress I was offered Full time role as Software developer Engineering.
+
+## What I worked on as Software Developer Engineer
+
+- Shipped VOIP calling feature.
+- Built OCR agent and scribe feature for Bose EMR. Used by Doctors in Real-world.
+- Improved agent's internal prompts and guidelines.
+- Orchestrated new agents  and implemented new agentic workflows.
+- Built Production ready voice agents for outreach, appointment booking and Follow-ups in mutliple languages.
+- Architected microservice including requirement gathering, schematic design, Environment decision end to end. To enroute and handle client level conigurations for voice agents.
+- Deployed the microservice on GCP. used nginx as reverse proxy.
+- Opimised SQL queries by 13X faster after resolving the notorious N+1 query. Implemented indexing and gin.
 
 ## Tools and frameworks
 
-Utilized the latest coding tools and development frameworks including LangChain, LangGraph, RAG and agentic SDLC.
+- Python FastAPIs (Backend)
+- React.js, Next.js (Frontend)
+- LangChain
+- LangGraph
+- Pydantic AI
+- PostgreSQL, SQL
+- Nginx
+- GCP(Google cloud provider)
+- Redis
+- Celery
+
