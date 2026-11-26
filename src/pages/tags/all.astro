@@ -74,13 +74,13 @@ const letters = groups.map((group) => group.letter);
           <span aria-current="page" class="text-text-2">All tags</span>
         </nav>
 
-        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold font-sans text-green-600 underline decoration-green-600 mb-5">All tags</h1>
+        <h1 class="text-xl sm:text-2xl font-semibold font-serif text-green-600 underline decoration-green-600 mb-5">All tags</h1>
 
-        <nav aria-label="Alphabet" class="sticky top-12 sm:top-14 z-30 flex flex-wrap gap-x-4 gap-y-2 mb-8 py-2 bg-bg border-y border-border">
+        <nav aria-label="Alphabet" class="sticky top-12 sm:top-14 z-30 flex flex-wrap gap-2 mb-8 py-3 bg-bg border-y border-border">
           {letters.map((letter) => (
             <a
               href={`#letter-${letter}`}
-              class="text-xs text-accent hover:underline font-medium"
+              class="inline-flex h-8 min-w-[2rem] items-center justify-center rounded-full border border-border px-2 text-xs font-semibold text-text-2 transition-colors hover:border-accent hover:text-accent-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               {letter}
             </a>
@@ -90,21 +90,22 @@ const letters = groups.map((group) => group.letter);
         <div class="space-y-8">
           {groups.map((group) => (
             <section id={`letter-${group.letter}`} class="scroll-mt-24">
-              <h2 class="text-base sm:text-lg font-bold font-serif text-text border-b border-border pb-2 mb-2">
+              <h2 class="border-b border-border pb-2 mb-2 text-sm font-semibold font-sans uppercase tracking-wider text-text-3">
                 {group.letter}
               </h2>
-              <ul class="divide-y divide-border/50">
+              <ul class="divide-y divide-border">
                 {group.tags.map((tag) => (
                   <li>
                     <a
                       href={`/tags/#${tag.slug}`}
-                      class="flex items-baseline justify-between gap-4 py-2.5 px-2 -mx-2 rounded-md group hover:bg-bg-2 transition-colors"
+                      class="group flex items-center justify-between gap-4 rounded-md px-3 py-3 -mx-3 transition-colors hover:bg-bg-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
-                      <span class="font-sans font-normal text-sm text-text group-hover:text-accent group-hover:underline transition-colors">
+                      <span class="font-sans text-sm font-medium text-text transition-colors group-hover:text-accent-text group-hover:underline">
                         {tag.label}
                       </span>
-                      <span class="text-xs text-text-3 shrink-0">
-                        {tag.count} item{tag.count === 1 ? '' : 's'} <span aria-hidden="true" class="group-hover:text-accent">&rarr;</span>
+                      <span class="inline-flex shrink-0 items-center gap-2 rounded-full border border-border px-2 py-0.5 text-[11px] tabular-nums text-text-3">
+                        {tag.count} item{tag.count === 1 ? '' : 's'}
+                        <span aria-hidden="true" class="transition-colors group-hover:text-accent-text">&rarr;</span>
                       </span>
                     </a>
                   </li>
