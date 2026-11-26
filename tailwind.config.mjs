@@ -19,7 +19,7 @@ export default {
         'accent-text': 'var(--color-accent-text)',
       },
       fontFamily: {
-        serif: ['Lora', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        serif: ['Literata Variable', 'Literata', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
       },
@@ -52,6 +52,13 @@ export default {
         toc: '220px',
         layout: '1100px',
       },
+      typography: {
+        gray: {
+          css: {
+            '--tw-prose-body': 'var(--color-prose)',
+          },
+        },
+      },
     },
   },
   plugins: [
@@ -76,10 +83,10 @@ export default {
         '--tw-prose-pre-bg': 'var(--tw-prose-invert-pre-bg)',
         '--tw-prose-th-borders': 'var(--tw-prose-invert-th-borders)',
         '--tw-prose-td-borders': 'var(--tw-prose-invert-td-borders)',
-        fontFamily: 'Lora, Georgia, Cambria, Times New Roman, serif',
-        fontSize: '17px',
-        lineHeight: '1.8',
-        maxWidth: '640px',
+        fontFamily: 'Literata Variable, Literata, Georgia, Cambria, Times New Roman, serif',
+        fontSize: '1.0625rem',
+        lineHeight: '1.7',
+        maxWidth: '68ch',
         h1: {
           fontSize: '1.5rem',
           fontWeight: '700',
@@ -114,10 +121,10 @@ export default {
           }
         },
         p: {
-          fontSize: '0.875rem',
-          lineHeight: '1.5',
-          marginTop: '0.5rem',
-          marginBottom: '0.5rem',
+          fontSize: '1.0625rem',
+          lineHeight: '1.7',
+          marginTop: '0',
+          marginBottom: '1em',
         },
         a: {
           color: 'var(--tw-prose-links)',

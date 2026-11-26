@@ -3,6 +3,7 @@ import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
+import '@fontsource-variable/literata/index.css';
 
 interface Props {
   title: string;
@@ -61,7 +62,6 @@ const imageUrl = new URL(image, Astro.site).href;
     <meta name="twitter:image" content={imageUrl} />
     {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <script is:inline>
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark')
@@ -252,9 +252,10 @@ const imageUrl = new URL(image, Astro.site).href;
     --color-border-2: #a8a29e;
 
     /* Text */
-    --color-text: #1c1917;
-    --color-text-2: #57534e;
-    --color-text-3: #6b6560;
+    --color-text: #181513;
+    --color-text-2: #4e4a45;
+    --color-text-3: #625c57;
+    --color-prose: #302d2a;
 
     /* Accent */
     --color-accent: #0d9488;
@@ -262,7 +263,7 @@ const imageUrl = new URL(image, Astro.site).href;
     --color-accent-text: #0f766e;
 
     /* Fonts */
-    --font-serif: 'Lora', 'Georgia', 'Cambria', 'Times New Roman', serif;
+    --font-serif: 'Literata Variable', 'Literata', 'Georgia', 'Cambria', 'Times New Roman', serif;
     --font-sans: 'Inter', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 
@@ -303,6 +304,7 @@ const imageUrl = new URL(image, Astro.site).href;
     --color-text: #f8f8f8;
     --color-text-2: #b8b8bc;
     --color-text-3: #9a9aa3;
+    --color-prose: #d1d5db;
 
     --color-accent: #6ee7b7;
     --color-accent-bg: #064e3b;
@@ -325,14 +327,14 @@ const imageUrl = new URL(image, Astro.site).href;
     text-wrap: pretty;
   }
   p, li, blockquote {
-    max-width: 85ch;
+    max-width: 68ch;
     text-wrap: pretty;
     overflow-wrap: break-word;
     word-break: break-word;
     hyphens: auto;
     line-break: strict;
-    font-size: clamp(0.875rem, 2vw, 1.0625rem);
-    line-height: 1.5;
+    font-size: 1.0625rem;
+    line-height: 1.65;
   }
   h1, h2, h3, h4, h5, h6 {
     text-wrap: balance;
