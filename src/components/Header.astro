@@ -33,7 +33,7 @@ const searchActive =
 		<div class='flex items-center justify-between h-12 sm:h-14'>
 			<a
 				href='/'
-				class='text-base font-bold font-serif text-text hover:text-accent transition-colors'>
+				class='text-base font-bold font-serif text-text hover:text-accent-text transition-colors'>
 				./Nishant Kumar Sagar
 			</a>
 
@@ -44,7 +44,7 @@ const searchActive =
 						<a
 							href={item.href}
 							class:list={[
-								"text-sm font-medium transition-colors hover:text-accent",
+								"text-sm font-medium transition-colors hover:text-accent-text",
 								currentPath === item.href ||
 								(item.href !== "/" &&
 									currentPath.startsWith(item.href))
@@ -85,12 +85,16 @@ const searchActive =
 				<BackgroundPicker />
 				<button
 					id='theme-toggle'
+					type='button'
+					aria-label='Toggle color theme'
+					title='Toggle color theme'
 					class='w-9 h-9 rounded-lg flex items-center justify-center hover:bg-bg-3 transition-colors'>
 					<svg
 						class='w-4 h-4 text-text'
 						fill='none'
 						stroke='currentColor'
-						viewBox='0 0 24 24'>
+						viewBox='0 0 24 24'
+						aria-hidden='true'>
 						<path
 							stroke-linecap='round'
 							stroke-linejoin='round'
@@ -133,12 +137,16 @@ const searchActive =
 				<BackgroundPicker />
 				<button
 					id='mobile-theme-toggle'
+					type='button'
+					aria-label='Toggle color theme'
+					title='Toggle color theme'
 					class='w-9 h-9 bg-bg rounded-lg flex items-center justify-center hover:bg-bg-2 transition-colors'>
 					<svg
 						class='w-4 h-4 text-text'
 						fill='none'
 						stroke='currentColor'
-						viewBox='0 0 24 24'>
+						viewBox='0 0 24 24'
+						aria-hidden='true'>
 						<path
 							stroke-linecap='round'
 							stroke-linejoin='round'
@@ -192,7 +200,7 @@ const searchActive =
 				<button
 					type='submit'
 					aria-label='Submit search'
-					class='w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-text-2 hover:text-accent hover:bg-bg-2 transition-colors'>
+					class='w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-text-2 hover:text-accent-text hover:bg-bg-2 transition-colors'>
 					<svg
 						class='w-4 h-4 sm:w-5 sm:h-5'
 						fill='none'
@@ -227,7 +235,7 @@ const searchActive =
 					id='header-search-close'
 					type='button'
 					aria-label='Close search'
-					class='w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-text-2 hover:text-accent hover:bg-bg-2 transition-colors'>
+					class='w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-text-2 hover:text-accent-text hover:bg-bg-2 transition-colors'>
 					<svg
 						class='w-4 h-4 sm:w-5 sm:h-5'
 						fill='none'
@@ -259,7 +267,7 @@ const searchActive =
 							currentPath === item.href ||
 							(item.href !== "/" &&
 								currentPath.startsWith(item.href))
-								? "text-accent"
+								? "text-accent-text"
 								: "text-text-2 hover:text-text",
 						]}>
 						{item.label}

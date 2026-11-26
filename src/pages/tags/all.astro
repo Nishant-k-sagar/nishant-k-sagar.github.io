@@ -69,12 +69,12 @@ const letters = groups.map((group) => group.letter);
     <section class="py-6 px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-auto">
         <nav aria-label="Breadcrumb" class="text-xs text-text-3 mb-3">
-          <a href="/tags/" class="hover:text-accent">Tags</a>
+          <a href="/tags/" class="hover:text-accent-text">Tags</a>
           <span aria-hidden="true"> / </span>
           <span aria-current="page" class="text-text-2">All tags</span>
         </nav>
 
-        <h1 class="text-xl sm:text-2xl font-semibold font-serif text-green-600 underline decoration-green-600 mb-5">All tags</h1>
+        <h1 class="text-xl sm:text-2xl font-semibold font-serif text-accent-text underline decoration-accent-text mb-5">All tags</h1>
 
         <nav aria-label="Alphabet" class="sticky top-12 sm:top-14 z-30 flex flex-wrap gap-2 mb-8 py-3 bg-bg border-y border-border">
           {letters.map((letter) => (
@@ -116,7 +116,7 @@ const letters = groups.map((group) => group.letter);
         </div>
 
         <div class="mt-10 pt-6 border-t border-border">
-          <a href="/tags/" class="text-sm text-accent hover:underline font-medium">&larr; Back to Tags</a>
+          <a href="/tags/" class="text-sm text-accent-text hover:underline font-medium">&larr; Back to Tags</a>
         </div>
       </div>
     </section>

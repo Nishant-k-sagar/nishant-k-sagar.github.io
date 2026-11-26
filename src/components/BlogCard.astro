@@ -32,10 +32,10 @@ const formattedDate = formatDate(date);
 		</span>
 	</div>
 	<h2
-		class='text-sm sm:text-base font-semibold font-serif mb-1.5 group-hover:text-accent dark:group-hover:text-dark-accent transition-colors leading-snug flex items-center gap-2'>
+		class='text-sm sm:text-base font-semibold font-serif mb-1.5 group-hover:text-accent-text transition-colors leading-snug flex items-center gap-2'>
 		{
 			postNumber && (
-				<span class='text-green-600 text-xs font-mono'>#{postNumber}</span>
+				<span class='text-accent-text text-xs font-mono'>#{postNumber}</span>
 			)
 		}
 		<a href={getPostUrl(slug)} class='truncate hover:underline decoration-1 underline-offset-4'>

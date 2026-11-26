@@ -16,7 +16,7 @@ const hasMeta = Boolean(entry.data.company || entry.data.location);
 	class='group block border-b border-border dark:border-dark-border-2 py-3 hover:border-border-2 dark:hover:border-dark-border-2 transition-colors'>
 	<div class='flex items-baseline justify-between gap-3 mb-1'>
 		<h3
-			class='text-base sm:text-lg lg:text-xl font-bold font-serif leading-tight text-text dark:text-dark-text group-hover:text-accent dark:group-hover:text-dark-accent transition-colors'>
+			class='text-base sm:text-lg lg:text-xl font-bold font-serif leading-tight text-text dark:text-dark-text group-hover:text-accent-text transition-colors'>
 			{entry.data.title}
 		</h3>
 		{
@@ -29,7 +29,7 @@ const hasMeta = Boolean(entry.data.company || entry.data.location);
 	</div>
 	{
 		hasMeta && (
-			<p class='text-xs sm:text-sm font-medium text-green-600 mb-1'>
+			<p class='text-xs sm:text-sm font-medium text-accent-text mb-1'>
 				{entry.data.company}
 				{entry.data.location && (
 					<span class='text-text-3 dark:text-dark-text-3 font-normal'>
@@ -48,7 +48,7 @@ const hasMeta = Boolean(entry.data.company || entry.data.location);
 		)
 	}
 	<span
-		class='mt-2 inline-block text-xs font-medium text-accent dark:text-dark-accent group-hover:underline underline-offset-2'>
+		class='mt-2 inline-block text-xs font-medium text-accent-text group-hover:underline underline-offset-2'>
 		View details
 	</span>
 </a>

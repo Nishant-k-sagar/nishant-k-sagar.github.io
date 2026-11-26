@@ -79,10 +79,10 @@ const jsonLd = {
 					<span
 						class='text-3xl sm:text-4xl'
 						style='font-family: var(--font-serif); transform: rotate(-10deg);'
-						>Hello<span class='text-green-600'>,</span></span
+						>Hello<span class='text-accent-text'>,</span></span
 					>
 					<span class='text-xl sm:text-2xl'>I am</span>
-					<span class='text-green-600'>Nishant</span>
+					<span class='text-accent-text'>Nishant</span>
 				</h1>
 				<div class='hero-intro text-text-2 leading-relaxed font-serif max-w-2xl'>
 					{IntroContent && <IntroContent />}
@@ -96,7 +96,7 @@ const jsonLd = {
 				<section class='py-6 sm:py-8 px-4 sm:px-6 lg:px-8'>
 					<div class='max-w-5xl mx-auto'>
 						<div class='flex items-center justify-between mb-4'>
-							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
+							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-accent-text underline decoration-accent-text'>
 								Experience
 							</h2>
 						</div>
@@ -116,12 +116,13 @@ const jsonLd = {
 				<section class='py-6 sm:py-8 px-4 sm:px-6 lg:px-8'>
 					<div class='max-w-5xl mx-auto'>
 						<div class='flex items-center justify-between mb-4'>
-							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
+							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-accent-text underline decoration-accent-text'>
 								Featured blog posts
 							</h2>
 							<a
 								href='/blog'
-								class='text-accent hover:text-text transition-colors text-sm sm:text-base font-medium border-b border-transparent hover:border-accent font-sans'>
+								aria-label='View all blog posts'
+								class='text-accent-text hover:text-text transition-colors text-sm sm:text-base font-medium border-b border-transparent hover:border-accent font-sans'>
 								View all
 							</a>
 						</div>
@@ -148,12 +149,13 @@ const jsonLd = {
 				<section class='py-6 sm:py-8 px-4 sm:px-6 lg:px-8'>
 					<div class='max-w-5xl mx-auto'>
 						<div class='flex items-center justify-between mb-4'>
-							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
+							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-accent-text underline decoration-accent-text'>
 								Featured Projects
 							</h2>
 							<a
 								href='/projects'
-								class='text-accent hover:text-text transition-colors text-sm sm:text-base font-medium border-b border-transparent hover:border-accent font-sans'>
+								aria-label='View all projects'
+								class='text-accent-text hover:text-text transition-colors text-sm sm:text-base font-medium border-b border-transparent hover:border-accent font-sans'>
 								View all
 							</a>
 						</div>
@@ -199,12 +201,12 @@ const jsonLd = {
 					id='skills-toggle'
 					class='flex items-center gap-2 mb-4 w-full text-left'>
 					<h2
-						class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
+						class='text-base sm:text-lg lg:text-xl font-bold font-sans text-accent-text underline decoration-accent-text'>
 						Skills
 					</h2>
 					<span
 						id='skills-arrow'
-						class='text-green-600 transition-transform duration-200'
+						class='text-accent-text transition-transform duration-200'
 						>▼</span
 					>
 				</button>

@@ -36,11 +36,11 @@ const experienceEntries = allEntries
   <main class="flex-1">
     <section class="py-6 px-4 sm:px-6 lg:px-8">
       <div class="max-w-5xl mx-auto">
-        <h1 class="text-xl sm:text-2xl font-semibold font-serif text-green-600 underline decoration-green-600 mb-4">Timeline</h1>
+        <h1 class="text-xl sm:text-2xl font-semibold font-serif text-accent-text underline decoration-accent-text mb-4">Timeline</h1>
         <p class="text-base leading-[1.7] font-serif text-text-2 mb-8 max-w-[68ch]">These are major events in the development journey so far. Still rolling.</p>
         <!-- Timeline Tabs -->
         <div class="flex space-x-4 mb-8 border-b border-border">
-          <button id="main-timeline-tab" class="px-4 py-3 text-sm font-medium font-sans text-text border-b-2 border-green-600 transition-all hover:text-green-600">Timeline</button>
+          <button id="main-timeline-tab" class="px-4 py-3 text-sm font-medium font-sans text-text border-b-2 border-green-600 transition-all hover:text-accent-text">Timeline</button>
           <button id="experience-timeline-tab" class="px-4 py-3 text-sm font-medium font-sans text-text-2 border-b-2 border-transparent hover:text-text transition-all">Experience Timeline</button>
         </div>
     
@@ -54,7 +54,7 @@ const experienceEntries = allEntries
       {mainEntries.map((entry) => (
           <div class="relative pl-10 sm:pl-14">
             <!-- Timeline number -->
-            <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 border-accent bg-bg text-accent text-xs font-mono flex items-center justify-center font-bold">
+            <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 border-accent bg-bg text-accent-text text-xs font-mono flex items-center justify-center font-bold">
               {entry.number}
             </div>
             
@@ -68,8 +68,8 @@ const experienceEntries = allEntries
               {entry.type === 'blog' ? (
                 <article class="group border-b border-border py-3 hover:border-border-2 transition-colors">
                    <h2 class:list={{
-                     "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent transition-colors leading-tight truncate": true,
-                     "text-green-600": entry.highlighted
+                     "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent-text transition-colors leading-tight truncate": true,
+                     "text-accent-text": entry.highlighted
                    }}>
                      <a href={`/blog/${entry.id.replace('blog-', '')}`}>
                        {entry.title}
@@ -82,8 +82,8 @@ const experienceEntries = allEntries
               ) : entry.type === 'project' ? (
                 <article class="bg-surface border-b border-border py-3 hover:border-border-2 transition-colors">
                       <h2 class:list={{
-                        "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent transition-colors leading-tight truncate": true,
-                        "text-green-600": entry.highlighted
+                        "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent-text transition-colors leading-tight truncate": true,
+                        "text-accent-text": entry.highlighted
                       }}>
                            <a href={`/projects/${entry.id.replace('project-', '')}`}>
                              {entry.title}
@@ -101,9 +101,9 @@ const experienceEntries = allEntries
                 <article class="border-b border-border py-3">
                    <h2 class:list={{
                      "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 text-text": true,
-                     "text-green-600": entry.highlighted
+                     "text-accent-text": entry.highlighted
                    }}>
-                     <a href={`/timeline/${entry.id}`} class="hover:text-accent transition-colors">
+                     <a href={`/timeline/${entry.id}`} class="hover:text-accent-text transition-colors">
                        {entry.title}
                      </a>
                    </h2>
@@ -128,7 +128,7 @@ const experienceEntries = allEntries
       {experienceEntries.map((entry) => (
           <div class="relative pl-10 sm:pl-14">
             <!-- Timeline number -->
-            <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 border-accent bg-bg text-accent text-xs font-mono flex items-center justify-center font-bold">
+            <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full border-2 border-accent bg-bg text-accent-text text-xs font-mono flex items-center justify-center font-bold">
               {entry.number}
             </div>
 
@@ -141,8 +141,8 @@ const experienceEntries = allEntries
             <div>
                   <article class="group border-b border-border py-3 hover:border-border-2 transition-colors">
                        <h2 class:list={{
-                         "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent transition-colors leading-tight truncate": true,
-                         "text-green-600": entry.highlighted
+                         "text-sm sm:text-base lg:text-lg font-bold font-serif mb-1 group-hover:text-accent-text transition-colors leading-tight truncate": true,
+                         "text-accent-text": entry.highlighted
                        }}>
                          <a href={`/timeline/${entry.id}`}>
                            {entry.title}

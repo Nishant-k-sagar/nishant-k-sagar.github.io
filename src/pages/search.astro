@@ -10,7 +10,7 @@ import Footer from '../components/Footer.astro';
   <main class="flex-1">
     <section class="py-6 px-4 sm:px-6 lg:px-8">
       <div class="max-w-5xl mx-auto">
-        <h1 class="text-xl sm:text-2xl font-semibold font-serif text-green-600 underline decoration-green-600 mb-4">Search</h1>
+        <h1 class="text-xl sm:text-2xl font-semibold font-serif text-accent-text underline decoration-accent-text mb-4">Search</h1>
 
         <div class="mb-6">
           <label for="search-input" class="block text-sm font-medium text-text mb-2">Search articles and projects</label>
@@ -75,7 +75,7 @@ import Footer from '../components/Footer.astro';
         a.href = item.url;
         a.textContent = item.title;
         li.className = 'border-b border-border pb-3';
-        a.className = 'font-serif text-base font-semibold leading-snug text-accent hover:underline';
+        a.className = 'font-serif text-base font-semibold leading-snug text-accent-text hover:underline';
         const p = document.createElement('p');
         p.textContent = item.excerpt;
         p.className = 'font-serif text-sm leading-[1.65] text-text-2 mt-1 max-w-[68ch]';
