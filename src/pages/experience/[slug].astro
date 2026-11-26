@@ -1,0 +1,88 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import Prose from "../../components/Prose.astro";
+import { formatExperienceRange } from "../../utils/format-date";
+
+export async function getStaticPaths() {
+	const experiences = await getCollection(
+		"experience",
+		({ data }) => data.status !== "draft",
+	);
+	return experiences.map((entry) => ({
+		params: { slug: entry.id },
+		props: { entry },
+	}));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const range = formatExperienceRange(entry.data);
+---
+
+<BaseLayout
+	title={`${entry.data.title} | Experience`}
+	description={entry.data.excerpt ??
+		`${entry.data.title} at ${entry.data.company}`}
+	type='article'>
+	<Header />
+
+	<main class='flex-1'>
+		<article class='py-6 sm:py-8 px-4 sm:px-6 lg:px-8'>
+			<div class='max-w-5xl mx-auto'>
+				<a
+					href='/'
+					class='mb-4 inline-block text-sm font-medium text-accent dark:text-dark-accent hover:underline underline-offset-2'>
+					Back to home
+				</a>
+
+				<header class='mb-4'>
+					<div class='grid grid-cols-[1fr_auto] items-end gap-x-4 mb-2'>
+						<h1
+							class='text-xl sm:text-2xl lg:text-3xl font-semibold font-serif text-text max-w-[68ch]'>
+							{entry.data.title}
+						</h1>
+						{
+							range && (
+								<span class='text-xs sm:text-sm text-text-2 dark:text-dark-text-2 whitespace-nowrap'>
+									{range}
+								</span>
+							)
+						}
+					</div>
+
+					<p class='flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-medium text-green-600'>
+						{
+							entry.data.url ? (
+								<a
+									href={entry.data.url}
+									target='_blank'
+									rel='noopener noreferrer'
+									class='hover:underline underline-offset-2'>
+									{entry.data.company}
+								</a>
+							) : (
+								<span>{entry.data.company}</span>
+							)
+						}
+						{
+							entry.data.location && (
+								<span class='text-text-3 dark:text-dark-text-3 font-normal'>
+									{entry.data.location}
+								</span>
+							)
+						}
+					</p>
+				</header>
+
+				<Prose>
+					<Content />
+				</Prose>
+			</div>
+		</article>
+	</main>
+
+	<Footer />
+</BaseLayout>

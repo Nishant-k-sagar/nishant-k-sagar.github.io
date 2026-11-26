@@ -35,6 +35,18 @@ export function formatMonth(monthString: string): string {
   });
 }
 
+/** Format an experience date range, falling back to its free-text period. */
+export function formatExperienceRange(entry: {
+  start?: string;
+  end?: string;
+  period?: string;
+}): string {
+  const { start, end, period } = entry;
+  return start
+    ? `${formatMonth(start)} - ${end ? formatMonth(end) : 'Present'}`
+    : (period ?? (end ? formatMonth(end) : ''));
+}
+
 /**
  * Format ISO date string to dd-mm-yyyy format
  * Returns format like "10-04-2026"

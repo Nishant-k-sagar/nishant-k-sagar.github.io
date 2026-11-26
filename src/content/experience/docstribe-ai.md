@@ -1,6 +1,7 @@
 ---
 title: "Software Development Engineer"
 company: "Docstribe AI"
+excerpt: "Building voice agents for real customers, AI agents in production, agentic workflows, and the microservices, micro-frontends and APIs behind them."
 url: "https://www.docstribe.com/"
 start: "2026-05"
 period: "Present"

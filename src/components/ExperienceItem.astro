@@ -1,26 +1,19 @@
 ---
-import { render, type CollectionEntry } from "astro:content";
-import { formatMonth } from "../utils/format-date";
+import type { CollectionEntry } from "astro:content";
+import { formatExperienceRange } from "../utils/format-date";
 
 interface Props {
 	entry: CollectionEntry<"experience">;
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
-
-const { start, end, period } = entry.data;
-
-// "Jan 2024 - Present", "Jan 2024 - Nov 2024", or the free-text fallback.
-const range = start
-	? `${formatMonth(start)} - ${end ? formatMonth(end) : "Present"}`
-	: (period ?? (end ? formatMonth(end) : ""));
-
+const range = formatExperienceRange(entry.data);
 const hasMeta = Boolean(entry.data.company || entry.data.location);
 ---
 
-<article
-	class='group border-b border-border dark:border-dark-border-2 py-3 hover:border-border-2 dark:hover:border-dark-border-2 transition-colors'>
+<a
+	href={`/experience/${entry.id}/`}
+	class='group block border-b border-border dark:border-dark-border-2 py-3 hover:border-border-2 dark:hover:border-dark-border-2 transition-colors'>
 	<div class='flex items-baseline justify-between gap-3 mb-1'>
 		<h3
 			class='text-base sm:text-lg lg:text-xl font-bold font-serif leading-tight text-text dark:text-dark-text group-hover:text-accent dark:group-hover:text-dark-accent transition-colors'>
@@ -37,17 +30,7 @@ const hasMeta = Boolean(entry.data.company || entry.data.location);
 	{
 		hasMeta && (
 			<p class='text-xs sm:text-sm font-medium text-green-600 mb-1'>
-				{entry.data.url ? (
-					<a
-						href={entry.data.url}
-						target='_blank'
-						rel='noopener noreferrer'
-						class='hover:underline underline-offset-2'>
-						{entry.data.company}
-					</a>
-				) : (
-					entry.data.company
-				)}
+				{entry.data.company}
 				{entry.data.location && (
 					<span class='text-text-3 dark:text-dark-text-3 font-normal'>
 						{" · "}
@@ -57,36 +40,15 @@ const hasMeta = Boolean(entry.data.company || entry.data.location);
 			</p>
 		)
 	}
-	<div
-		class='experience-body font-serif text-text-2 dark:text-dark-text-2 text-sm leading-[1.65]'>
-		<Content />
-	</div>
-</article>
-
-<style>
-	.experience-body :global(p) {
-		margin: 0;
+	{
+		entry.data.excerpt && (
+			<p class='mt-1 text-xs sm:text-sm text-text-2 dark:text-dark-text-2 font-serif leading-[1.55]'>
+				{entry.data.excerpt}
+			</p>
+		)
 	}
-	.experience-body :global(p + p) {
-		margin-top: 0.75em;
-	}
-	.experience-body :global(ul) {
-		margin: 0.5em 0 0;
-		padding-left: 1.25em;
-		list-style: disc;
-	}
-	.experience-body :global(ol) {
-		margin: 0.5em 0 0;
-		padding-left: 1.25em;
-		list-style: decimal;
-	}
-	.experience-body :global(li) {
-		margin: 0.2em 0;
-	}
-	.experience-body :global(a) {
-		text-decoration: underline;
-	}
-	.experience-body :global(strong) {
-		font-weight: 600;
-	}
-</style>
+	<span
+		class='mt-2 inline-block text-xs font-medium text-accent dark:text-dark-accent group-hover:underline underline-offset-2'>
+		View details
+	</span>
+</a>
