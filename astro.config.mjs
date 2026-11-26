@@ -1,5 +1,4 @@
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
@@ -7,8 +6,10 @@ export default defineConfig({
   site: 'https://nishant-k-sagar.github.io',
   base: '/',
   output: 'static',
+  // Astro 7 defaults to JSX whitespace handling; keep the HTML-aware behavior
+  // from Astro 5/6 so inline spacing in existing content does not change.
+  compressHTML: true,
   integrations: [
-    tailwind(),
     mdx(),
     sitemap({
       filter: (page) => !page.includes('/404'),
