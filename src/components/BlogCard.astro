@@ -18,12 +18,12 @@ const formattedDate = formatDate(date);
 ---
 
 <article
-	class='group border-b border-border dark:border-dark-border-2 py-2.5 sm:py-3 hover:border-border-2 dark:hover:border-dark-border-2 transition-colors'>
+	class='group border-b border-border dark:border-dark-border-2 py-4 hover:border-border-2 dark:hover:border-dark-border-2 transition-colors'>
 	<div class='flex items-center justify-between mb-1'>
-		<time class='text-[10px] text-text-3 dark:text-dark-text-3'
+		<time class='text-[11px] text-text-3 dark:text-dark-text-3'
 			>{formattedDate}</time
 		>
-		<span class='flex items-center gap-1 flex-wrap'>
+		<span class='flex items-center gap-1.5 flex-wrap'>
 			{
 				tags.map((tag) => (
 					<TagChip tag={tag} />
@@ -32,18 +32,18 @@ const formattedDate = formatDate(date);
 		</span>
 	</div>
 	<h2
-		class='text-base sm:text-lg lg:text-xl font-bold font-serif mb-1 sm:mb-1.5 group-hover:text-accent dark:group-hover:text-dark-accent transition-colors leading-tight flex items-center gap-1.5'>
+		class='text-sm sm:text-base font-semibold font-serif mb-1.5 group-hover:text-accent dark:group-hover:text-dark-accent transition-colors leading-snug flex items-center gap-2'>
 		{
 			postNumber && (
 				<span class='text-green-600 text-xs font-mono'>#{postNumber}</span>
 			)
 		}
-		<a href={getPostUrl(slug)} class='truncate'>
+		<a href={getPostUrl(slug)} class='truncate hover:underline decoration-1 underline-offset-4'>
 			{title}
 		</a>
 	</h2>
 	<p
-		class='text-text-2 dark:text-dark-text-2 text-xs sm:text-sm leading-relaxed mb-0 line-clamp-1'>
+		class='font-serif text-text-2 dark:text-dark-text-2 text-sm leading-[1.65] mb-0 line-clamp-1'>
 		{excerpt}
 	</p>
 </article>
