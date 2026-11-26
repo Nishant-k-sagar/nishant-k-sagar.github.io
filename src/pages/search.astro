@@ -75,10 +75,10 @@ import Footer from '../components/Footer.astro';
         a.href = item.url;
         a.textContent = item.title;
         li.className = 'border-b border-border pb-3';
-        a.className = 'font-serif text-base font-semibold text-accent hover:underline';
+        a.className = 'font-serif text-base font-semibold leading-snug text-accent hover:underline';
         const p = document.createElement('p');
         p.textContent = item.excerpt;
-        p.className = 'font-serif text-sm leading-[1.6] text-text-2 mt-1 max-w-[68ch]';
+        p.className = 'font-serif text-sm leading-[1.65] text-text-2 mt-1 max-w-[68ch]';
         li.append(a, p);
         list.append(li);
       }
