@@ -145,7 +145,7 @@ export function buildTagNetwork(items: SourceItem[]): TagNetwork {
   }
 
   const byDateDesc = (a: TaggedItem, b: TaggedItem): number =>
-    b.date.localeCompare(a.date);
+    b.date.localeCompare(a.date) || a.id.localeCompare(b.id);
 
   const tags: TagNode[] = Array.from(bySlug.entries())
     .map(([slug, list]) => {
@@ -194,7 +194,9 @@ export function findRelatedItems(
 
   scored.sort(
     (a, b) =>
-      b.shared - a.shared || b.item.date.localeCompare(a.item.date),
+      b.shared - a.shared ||
+      b.item.date.localeCompare(a.item.date) ||
+      a.item.id.localeCompare(b.item.id),
   );
 
   return scored.slice(0, limit).map((entry) => entry.item);

@@ -28,6 +28,10 @@ const { wrapCode = false } = Astro.props;
         startOnLoad: false,
         securityLevel: 'strict',
         theme: dark ? 'dark' : 'default',
+        // Mermaid 12 defaults to the ELK layout and the new "neo" look.
+        // Pin the Mermaid 11 behavior so existing diagrams keep their output.
+        layout: 'dagre',
+        look: 'classic',
       });
       let n = 0;
       for (const block of blocks) {
