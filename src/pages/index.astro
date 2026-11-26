@@ -75,16 +75,16 @@ const jsonLd = {
 			class='relative py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 overflow-hidden'>
 			<div class='max-w-5xl mx-auto relative'>
 				<h1
-					class='text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 font-serif text-text'>
+					class='text-3xl sm:text-4xl font-semibold mb-4 font-serif text-text'>
 					<span
-						class='text-3xl sm:text-4xl lg:text-5xl'
-						style='font-family: cursive; transform: rotate(-10deg);'
+						class='text-3xl sm:text-4xl'
+						style='font-family: var(--font-serif); transform: rotate(-10deg);'
 						>Hello<span class='text-green-600'>,</span></span
 					>
-					<span class='text-xl sm:text-2xl lg:text-3xl'>I am</span>
+					<span class='text-xl sm:text-2xl'>I am</span>
 					<span class='text-green-600'>Nishant</span>
 				</h1>
-				<div class='hero-intro text-text-2 leading-relaxed font-sans max-w-2xl'>
+				<div class='hero-intro text-text-2 leading-relaxed font-serif max-w-2xl'>
 					{IntroContent && <IntroContent />}
 				</div>
 			</div>
@@ -93,9 +93,9 @@ const jsonLd = {
 		<!-- Experience -->
 		{
 			experiences.length > 0 && (
-				<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>
+				<section class='py-6 sm:py-8 px-4 sm:px-6 lg:px-8'>
 					<div class='max-w-5xl mx-auto'>
-						<div class='flex items-center justify-between mb-2 sm:mb-4'>
+						<div class='flex items-center justify-between mb-4'>
 							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
 								Experience
 							</h2>
@@ -113,9 +113,9 @@ const jsonLd = {
 		<!-- Featured blog posts -->
 		{
 			recentPosts.length > 0 && (
-				<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>
+				<section class='py-6 sm:py-8 px-4 sm:px-6 lg:px-8'>
 					<div class='max-w-5xl mx-auto'>
-						<div class='flex items-center justify-between mb-2 sm:mb-4'>
+						<div class='flex items-center justify-between mb-4'>
 							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
 								Featured blog posts
 							</h2>
@@ -145,9 +145,9 @@ const jsonLd = {
 		<!-- Featured Projects -->
 		{
 			featuredProjects.length > 0 && (
-				<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>
+				<section class='py-6 sm:py-8 px-4 sm:px-6 lg:px-8'>
 					<div class='max-w-5xl mx-auto'>
-						<div class='flex items-center justify-between mb-2 sm:mb-4'>
+						<div class='flex items-center justify-between mb-4'>
 							<h2 class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
 								Featured Projects
 							</h2>
@@ -157,7 +157,7 @@ const jsonLd = {
 								View all
 							</a>
 						</div>
-						<div class='space-y-2 sm:space-y-3 lg:space-y-4'>
+						<div>
 							{featuredProjects.map((project) => (
 								<ProjectCard
 									title={project.data.title}
@@ -177,7 +177,7 @@ const jsonLd = {
 		<!-- Empty State -->
 		{
 			recentPosts.length === 0 && featuredProjects.length === 0 && (
-				<section class='py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8'>
+				<section class='py-12 sm:py-16 px-4 sm:px-6 lg:px-8'>
 					<div class='max-w-5xl mx-auto text-center'>
 						<p class='text-text-2 text-sm sm:text-base'>
 							Content coming soon! Add your blog posts and
@@ -193,11 +193,11 @@ const jsonLd = {
 		}
 
 		<!-- Skills Section -->
-		<section class='py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8'>
+		<section class='py-6 sm:py-8 px-4 sm:px-6 lg:px-8'>
 			<div class='max-w-5xl mx-auto'>
 				<button
 					id='skills-toggle'
-					class='flex items-center gap-2 mb-2 sm:mb-4 w-full text-left'>
+					class='flex items-center gap-2 mb-4 w-full text-left'>
 					<h2
 						class='text-base sm:text-lg lg:text-xl font-bold font-sans text-green-600 underline decoration-green-600'>
 						Skills
@@ -213,15 +213,15 @@ const jsonLd = {
 					id='skills-content'
 					class='overflow-hidden max-h-0 transition-all duration-300 ease-in-out'>
 					<div
-						class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2'>
+						class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4'>
 						{skillGroups.map((group) => (
 							<div
-								class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-2 sm:p-3 transition-colors'>
+								class='bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-md p-4 transition-colors'>
 								<h3
-									class='text-sm font-semibold mb-1.5 text-stone-900 dark:text-stone-100'>
+									class='text-sm font-semibold mb-2 text-stone-900 dark:text-stone-100'>
 									{group.data.title}
 								</h3>
-								<div class='flex flex-wrap gap-1'>
+								<div class='flex flex-wrap gap-2'>
 									{group.data.items.map((item) => (
 										<span
 											class='text-xs px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 text-stone-700 dark:text-stone-300'
@@ -267,7 +267,7 @@ const jsonLd = {
 
 <style>
 	.hero-intro :global(p) {
-		font-size: clamp(0.875rem, 2vw, 1.0625rem);
+		font-size: 1.0625rem;
 		line-height: 1.7;
 		margin: 0;
 		max-width: none;
