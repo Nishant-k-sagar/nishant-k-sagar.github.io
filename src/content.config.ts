@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 import { isValidDate, isValidMonth } from './utils/format-date';
 
@@ -102,7 +103,7 @@ const experience = defineCollection({
   schema: z.object({
     title: z.string(),
     company: z.string(),
-    url: z.string().url().optional(),
+    url: z.url().optional(),
     start: monthString.optional(),
     end: monthString.optional(),
     period: z.string().optional(),
