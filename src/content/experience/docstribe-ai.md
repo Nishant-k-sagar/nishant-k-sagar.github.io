@@ -14,7 +14,7 @@ status: "published"
 Worked on multiple projects including voice agents, Messaging platform, EMR, CRM, AI agents, agentic workflows, OCR agents. Contributed across backend and frontend. Built Microservice, deployed, developing and maintaining currently.
 I have worked with Python FastAPI in backend, Next.js in frontend, LangGraph and langChain for agent orchestration, GCP for deployment and Postgresql as DB.
 
-# Early Phase
+## Early Phase
 
 I joined Docstribe AI as an intern at SDE role. I was paired with the core development team and assigned beginner issues - these issues did not touch production database. I shipped VOIP calling featured in Kalaam - our main product. That feature went into prod. Later, I fixed many bugs, issues and shipped more features. Seeing My progress I was offered Full time role as Software developer Engineering.
 
